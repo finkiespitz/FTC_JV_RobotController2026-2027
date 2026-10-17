@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.common;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Subsystems.FlowerIntake;
 import org.firstinspires.ftc.teamcode.common.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.common.Subsystems.DriveTrain;
@@ -21,7 +22,7 @@ public class Robot {
     public FlowerIntake FlowerIntake;
 
     // Constructor initializes all your subsystems at once
-    public Robot(HardwareMap hardwareMap) {
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         this.driveTrain = new DriveTrain(hardwareMap);
         this.Intake = new Intake(hardwareMap);
         this.Limelight = new Limelight(hardwareMap);

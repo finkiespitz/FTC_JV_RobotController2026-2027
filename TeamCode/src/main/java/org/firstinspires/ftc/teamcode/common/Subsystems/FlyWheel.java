@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.common.Subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Robot;
 
 public class FlyWheel {
@@ -16,43 +18,43 @@ public class FlyWheel {
 
     }
 
-    public void run(HardwareMap hardwareMap, double nectarFactor, double pollenFactor, Gamepad gamepad1, Gamepad gamepad2) {
-
-        Robot robot = new Robot(hardwareMap);
-
-        double distanceFromHive = robot.Limelight.run();
-
-        boolean nectarIsNext = robot.NectarSensor.run();
-
+    // 2. TELOP METHOD:Use the Gamepads Directly
+    public void run(double nectarFactor, double pollenFactor, Gamepad gamepad1, Gamepad gamepad2,
+                    double distanceFromHive, boolean nectarIsNext, Telemetry telemetry) {
 
         double flyWheelPower = 0;
-
-
         double nectarSpeed = distanceFromHive * nectarFactor;
         double pollenSpeed = distanceFromHive * pollenFactor;
 
-        if(gamepad2.x && !previousXButton2) {
-             flyWheelPower = nectarIsNext ? nectarSpeed : pollenSpeed;
-        }
-        else  flyWheelPower = 0;
+        if (gamepad2.x && !previousXButton2) {
+            flyWheelPower = nectarIsNext ? nectarSpeed : pollenSpeed;
+        } else flyWheelPower = 0;
 
         previousXButton2 = gamepad2.x;
 
         //locking flyWheelPower to 1
-        if(flyWheelPower > 1)flyWheelPower = 1;
+        if (flyWheelPower > 1) flyWheelPower = 1;
 
         //applying the power to the flywheel
         flyWheel.setPower(flyWheelPower);
 
 
         //adding controller rumble
-        if(flyWheelPower > 0) {
+        if (flyWheelPower > 0) {
             gamepad2.rumble(1.0, 1.0, Gamepad.RUMBLE_DURATION_CONTINUOUS);
             gamepad1.rumble(1.0, 1.0, Gamepad.RUMBLE_DURATION_CONTINUOUS);
-        }
-        else gamepad2.stopRumble(); gamepad1.stopRumble();
+        } else gamepad2.stopRumble();
+        gamepad1.stopRumble();
 
+        telemetry.addData("flyWheel Power", flyWheelPower);
+        telemetry.update();
+    }
 
-
+    // 2. AUTONOMOUS METHOD: Bypasses gamepad and targets a direct speed
+    public void setPowerDirect(double power) {
+        if (power > 1) power = 1;
+        if (power < -1) power = -1;
+        flyWheel.setPower(power);
     }
 }
+

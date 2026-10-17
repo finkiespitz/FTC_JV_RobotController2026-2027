@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class DriveTrain {
@@ -12,7 +14,8 @@ public class DriveTrain {
     private final IMU imu;
 
     private boolean slowMode = false;
-    private boolean previousLeftStickButton = false;
+    private boolean prevLeftStickButton = false;
+    private boolean prevLeftAndRightBumper;
 
     public DriveTrain(HardwareMap hardwareMap) {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -44,16 +47,19 @@ public class DriveTrain {
         imu.resetYaw();
     }
 
-    public void run(Gamepad gamepad1) {
+    public void run(Gamepad gamepad1,
+                    Telemetry telemetry) {
+
+
         // Toggle slow mode
-        if (gamepad1.left_stick_button && !previousLeftStickButton) {
+        if (gamepad1.left_stick_button && !prevLeftStickButton) {
             slowMode = !slowMode;
         }
-        previousLeftStickButton = gamepad1.left_stick_button;
+        prevLeftStickButton = gamepad1.left_stick_button;
 
         double drive = gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
-        double twist = gamepad1.right_stick_x ;
+        double twist = gamepad1.right_stick_x;
 
         // Apply controller dead-zones
         if (Math.abs(drive) < 0.07) drive = 0;
@@ -88,5 +94,18 @@ public class DriveTrain {
         frontRight.setPower(speeds[1] * speedMultiplier);
         backLeft.setPower(speeds[2] * speedMultiplier);
         backRight.setPower(speeds[3] * speedMultiplier);
+
+        //reset heading controls
+
+        if (gamepad1.left_bumper && gamepad1.right_bumper && !prevLeftAndRightBumper) {
+            resetHeading();
+        }
+
+
+        prevLeftAndRightBumper = gamepad1.left_bumper && gamepad1.right_bumper;
+
+
+        telemetry.addData("Heading", heading);
+        telemetry.update();
     }
 }

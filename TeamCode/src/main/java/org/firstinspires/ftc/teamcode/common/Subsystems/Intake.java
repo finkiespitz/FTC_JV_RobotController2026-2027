@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Intake {
     private DcMotor intakeMotor;
 
@@ -12,7 +14,9 @@ public class Intake {
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void run(Gamepad gamepad2) {
+    // 1. TELEOP CALLS THIS: Utilizes Gamepads
+    public void run(Gamepad gamepad2,
+                    Telemetry telemetry) {
         double intakePower = 0;
 
         if (gamepad2.right_trigger_pressed) {
@@ -22,5 +26,14 @@ public class Intake {
         }
 
         intakeMotor.setPower(intakePower);
+
+        }
+    // 2. AUTONOMOUS CALLS THIS: Bypasses gamepads entirely
+    // Positive power to intake, negative power to reverse/outtake, 0 to stop
+    public void setPowerDirect(double power) {
+        intakeMotor.setPower(power);
+
+
     }
 }
+
