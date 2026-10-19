@@ -104,8 +104,6 @@ public class DriveTrain {
 
         prevLeftAndRightBumper = gamepad1.left_bumper && gamepad1.right_bumper;
 
-
-        telemetry.addData("Heading", heading);
         telemetry.update();
     }
 }

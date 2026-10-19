@@ -15,6 +15,7 @@ public class Limelight {
 
         limelight.pipelineSwitch(0); // Make sure pipeline 0 is set to AprilTags in the Limelight UI
         limelight.start(); // Starts polling data
+        limelight.pipelineSwitch(0);
     }
 
 

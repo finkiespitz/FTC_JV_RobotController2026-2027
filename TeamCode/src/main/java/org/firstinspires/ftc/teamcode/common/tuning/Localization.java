@@ -31,9 +31,7 @@ public class Localization {
         pinpoint.resetPosAndIMU();
     }
 
-    /**
-     * Call this inside your loop. It updates the position and sends it straight to your Driver Station screen.
-     */
+
     public void update() {
         // 1. Pulls the latest location from the pods
         pinpoint.update();
@@ -51,23 +49,16 @@ public class Localization {
         telemetry.update();
     }
 
-    /**
-     * Returns current X position in Inches (Updated to match your method's comment tag)
-     */
     public double getX() {
         return pinpoint.getPosition().getX(DistanceUnit.INCH);
     }
 
-    /**
-     * Returns current Y position in Inches (Updated to match your method's comment tag)
-     */
+
     public double getY() {
         return pinpoint.getPosition().getY(DistanceUnit.INCH);
     }
 
-    /**
-     * Returns current Heading in degrees (from -180 to 180)
-     */
+
     public double getHeading() {
         return pinpoint.getPosition().getHeading(AngleUnit.RADIANS);
     }
