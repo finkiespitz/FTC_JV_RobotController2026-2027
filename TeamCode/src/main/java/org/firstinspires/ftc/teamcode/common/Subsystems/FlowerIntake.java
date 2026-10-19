@@ -25,9 +25,9 @@ public class FlowerIntake {
             if (servo.getPosition() == 0) {
                 servo.setPosition(10);
             } else {
-                servo.setPosition(0);}}
+                servo.setPosition(0);}
 
-
+        prevDPadUp = gamepad2.dpad_up;}
 
         telemetry.addData("flowerServo Pose", servo.getPosition());
 
