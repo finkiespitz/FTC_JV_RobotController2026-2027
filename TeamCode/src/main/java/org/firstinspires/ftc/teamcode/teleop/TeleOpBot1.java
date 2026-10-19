@@ -2,17 +2,13 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.common.Robot;
 import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
-
+@Config
 @TeleOp(name = "TeleOp", group = "Linear OpMode")
 public class TeleOpBot1 extends LinearOpMode {
-
-
-    private final double nectarFactor = 0.30;
-    private final double pollenFactor = 0.10;
-
 
     @Override
     public void runOpMode() {
@@ -36,8 +32,8 @@ public class TeleOpBot1 extends LinearOpMode {
                     telemetry);
 
             // 3. Run FlyWheel Subsystem
-            robot.FlyWheel.run(nectarFactor, pollenFactor, gamepad1, gamepad2,
-                   robot.Limelight.getPose(), robot.NectarSensor.run(), telemetry);
+            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(),
+                    robot.NectarSensor.run(), telemetry);
 
             //4. Run Flower Intake Subsystem
             robot.FlowerIntake.run(gamepad2,

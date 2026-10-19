@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.common.tuning;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -7,57 +10,62 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
+@Config
 public class Localization {
     public GoBildaPinpointDriver pinpoint;
-    private final Telemetry telemetry; // NEW: Using the standard Driver Station telemetry tracker
+    private final Telemetry telemetry;
 
-    // UPDATED: Added Telemetry to the constructor so your OpModes can pass it in
+    public static double START_X = 0.0;
+    public static double START_Y = 0.0;
+    public static double START_HEADING = 0.0;
+
     public Localization(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
-        // Connects to the hardware config name "pinpoint"
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-
-        // Configures your 32mm gobilda 4-bar odometry pods
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-
-        // Tells the computer where your pods are mounted (in mm from center of bot)
         pinpoint.setOffsets(-100.0, 100.0, DistanceUnit.INCH);
-
-        // Sets encoder directions
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        // Zeroes out the map tracker
-        pinpoint.resetPosAndIMU();
+        Pose2D startPose = new Pose2D(DistanceUnit.INCH, START_X, START_Y, AngleUnit.DEGREES, START_HEADING);
+        pinpoint.setPosition(startPose);
     }
 
-
     public void update() {
-        // 1. Pulls the latest location from the pods
         pinpoint.update();
 
-        // 2. Extracts coordinates (Fixed to use .getPose() which matches SDK 12)
         Pose2D pose = pinpoint.getPosition();
         double x = pose.getX(DistanceUnit.INCH);
         double y = pose.getY(DistanceUnit.INCH);
         double headingDeg = pose.getHeading(AngleUnit.DEGREES);
 
-        // 3. Sends numbers directly to your Driver Station display instead of a dashboard map
         telemetry.addData("X Position (in)", x);
         telemetry.addData("Y Position (in)", y);
         telemetry.addData("Heading (deg)", headingDeg);
         telemetry.update();
+
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("Robot X", x);
+        packet.put("Robot Y", y);
+        packet.put("Robot Heading (deg)", headingDeg);
+
+        packet.fieldOverlay()
+                .setStroke("blue")
+                .setStrokeWidth(1)
+                .strokeCircle(x, y, 9)
+                .strokeLine(x, y, x + 9 * Math.cos(Math.toRadians(headingDeg)), y + 9 * Math.sin(Math.toRadians(headingDeg)));
+
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 
     public double getX() {
         return pinpoint.getPosition().getX(DistanceUnit.INCH);
     }
 
-
     public double getY() {
         return pinpoint.getPosition().getY(DistanceUnit.INCH);
     }
-
 
     public double getHeading() {
         return pinpoint.getPosition().getHeading(AngleUnit.RADIANS);
