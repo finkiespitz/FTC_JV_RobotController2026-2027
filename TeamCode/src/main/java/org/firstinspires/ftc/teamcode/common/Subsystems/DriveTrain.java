@@ -1,18 +1,16 @@
 package org.firstinspires.ftc.teamcode.common.Subsystems;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.tuning.Localization;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class DriveTrain {
-    private final DcMotor frontLeft, frontRight, backLeft, backRight;
-    private final IMU imu;
+    private Localization localization;
 
+    private final DcMotor frontLeft, frontRight, backLeft, backRight;
     private boolean slowMode = false;
     private boolean prevLeftStickButton = false;
     private boolean prevLeftAndRightBumper;
@@ -23,14 +21,6 @@ public class DriveTrain {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(
-                new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.UP
-                )
-        );
-        imu.initialize(parameters);
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -43,11 +33,7 @@ public class DriveTrain {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void resetHeading() {
-        imu.resetYaw();
-    }
-
-    public void run(Gamepad gamepad1,
+    public void run(Gamepad gamepad1, double headingRad,
                     Telemetry telemetry) {
 
 
@@ -67,9 +53,8 @@ public class DriveTrain {
         if (Math.abs(twist) < 0.07) twist = 0;
 
         // Field-centric orientation geometry math
-        double heading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        double rotatedDrive = drive * Math.cos(heading) + strafe * Math.sin(heading);
-        double rotatedStrafe = -drive * Math.sin(heading) + strafe * Math.cos(heading);
+        double rotatedDrive = drive * Math.cos(headingRad) + strafe * Math.sin(headingRad);
+        double rotatedStrafe = -drive * Math.sin(headingRad) + strafe * Math.cos(headingRad);
 
         // Map drive vectors to power arrays
         double[] speeds = {
@@ -98,7 +83,7 @@ public class DriveTrain {
         //reset heading controls
 
         if (gamepad1.left_bumper && gamepad1.right_bumper && !prevLeftAndRightBumper) {
-            resetHeading();
+            localization.resetHeading();
         }
 
 

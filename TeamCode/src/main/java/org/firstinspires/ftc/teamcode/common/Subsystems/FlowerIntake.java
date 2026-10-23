@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.common.Subsystems;
 
-import androidx.annotation.NonNull;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 
 public class FlowerIntake {
-    private Servo servo;
+    private final Servo servo;
     private boolean prevDPadUp;
 
 
@@ -32,5 +29,8 @@ public class FlowerIntake {
         telemetry.addData("flowerServo Pose", servo.getPosition());
 
         telemetry.update();
+    }
+    public void setPose(double pose){
+        servo.setPosition(pose);
     }
 }

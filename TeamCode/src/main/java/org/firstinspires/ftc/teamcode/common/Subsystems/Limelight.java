@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.common.Subsystems;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes; // NEW: Needed to scan AprilTag blocks
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import java.util.List;
 
 public class Limelight {
@@ -13,9 +15,8 @@ public class Limelight {
     public Limelight(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        limelight.pipelineSwitch(0); // Make sure pipeline 0 is set to AprilTags in the Limelight UI
+        limelight.pipelineSwitch(0); // set pipeline 0 to AprilTags in the Limelight UI
         limelight.start(); // Starts polling data
-        limelight.pipelineSwitch(0);
     }
 
 

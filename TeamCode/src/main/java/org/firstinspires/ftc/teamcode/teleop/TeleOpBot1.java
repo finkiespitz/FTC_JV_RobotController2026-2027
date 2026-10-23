@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleop;
+import org.firstinspires.ftc.teamcode.common.Robot;
+import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.acmerobotics.dashboard.config.Config;
-import org.firstinspires.ftc.teamcode.common.Robot;
-import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 @Config
 @TeleOp(name = "TeleOp", group = "Linear OpMode")
@@ -14,17 +14,16 @@ public class TeleOpBot1 extends LinearOpMode {
     public void runOpMode() {
         // Instantiate the object-oriented master class
         Robot robot = new Robot(hardwareMap, telemetry);
-        Localization localization = new Localization(hardwareMap, telemetry);
 
         telemetry.addData("Status", "Initialized Clean Robot Hub!");
         telemetry.update();
 
         waitForStart();
-        robot.driveTrain.resetHeading();
+        robot.Localization.resetHeading();
 
         while (opModeIsActive()) {
             // 1. Run Drivetrain Subsystem
-            robot.driveTrain.run(gamepad1,
+            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(),
                     telemetry);
 
             // 2. Run Intake Subsystem
@@ -39,7 +38,7 @@ public class TeleOpBot1 extends LinearOpMode {
             robot.FlowerIntake.run(gamepad2,
                     telemetry);
 
-            localization.update();
+            robot.Localization.update();
         }
     }
 }

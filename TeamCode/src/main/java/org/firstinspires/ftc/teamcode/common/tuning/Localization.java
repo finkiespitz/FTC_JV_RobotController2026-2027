@@ -1,18 +1,21 @@
 package org.firstinspires.ftc.teamcode.common.tuning;
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
 @Config
 public class Localization {
     public GoBildaPinpointDriver pinpoint;
+    private final IMU imu;
     private final Telemetry telemetry;
 
     public static double START_X = 0.0;
@@ -29,6 +32,15 @@ public class Localization {
 
         Pose2D startPose = new Pose2D(DistanceUnit.INCH, START_X, START_Y, AngleUnit.DEGREES, START_HEADING);
         pinpoint.setPosition(startPose);
+
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                )
+        );
+        imu.initialize(parameters);
     }
 
     public void update() {
@@ -37,7 +49,7 @@ public class Localization {
         Pose2D pose = pinpoint.getPosition();
         double x = pose.getX(DistanceUnit.INCH);
         double y = pose.getY(DistanceUnit.INCH);
-        double headingDeg = pose.getHeading(AngleUnit.DEGREES);
+        double headingDeg = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
         telemetry.addData("X Position (in)", x);
         telemetry.addData("Y Position (in)", y);
@@ -67,7 +79,12 @@ public class Localization {
         return pinpoint.getPosition().getY(DistanceUnit.INCH);
     }
 
-    public double getHeading() {
-        return pinpoint.getPosition().getHeading(AngleUnit.RADIANS);
+    public double getHeadingRad(){
+        double headingRad = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        return headingRad;
+    }
+    public void resetHeading() {
+        imu.resetYaw();
     }
 }

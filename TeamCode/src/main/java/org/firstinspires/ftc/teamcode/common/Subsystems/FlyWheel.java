@@ -1,17 +1,17 @@
 package org.firstinspires.ftc.teamcode.common.Subsystems;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.Robot;
 @Config
 public class FlyWheel {
     private static double nectarFactor = 0.30;
     private static double pollenFactor = 0.10;
-    private DcMotor flyWheel;
+    private final DcMotor flyWheel;
     private boolean previousXButton2;
 
     public FlyWheel(HardwareMap hardwareMap) {
@@ -21,11 +21,11 @@ public class FlyWheel {
 
     }
 
-    // 2. TELOP METHOD:Use the Gamepads Directly
+    // 1. TELOP METHOD:Use the Gamepads Directly
     public void run(Gamepad gamepad1, Gamepad gamepad2,
                     double distanceFromHive, boolean nectarIsNext, Telemetry telemetry) {
 
-        double flyWheelPower = 0;
+        double flyWheelPower;
         double nectarSpeed = distanceFromHive * nectarFactor;
         double pollenSpeed = distanceFromHive * pollenFactor;
 
@@ -54,7 +54,7 @@ public class FlyWheel {
     }
 
     // 2. AUTONOMOUS METHOD: Bypasses gamepad and targets a direct speed
-    public void setPowerDirect(double power) {
+    public void setPower(double power) {
         if (power > 1) power = 1;
         if (power < -1) power = -1;
         flyWheel.setPower(power);

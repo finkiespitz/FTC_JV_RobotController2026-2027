@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.common.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.common.Subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.common.Subsystems.FlyWheel;
 import org.firstinspires.ftc.teamcode.common.Subsystems.NectarSensor;
+import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -20,6 +21,7 @@ public class Robot {
     public FlyWheel FlyWheel;
     public NectarSensor NectarSensor;
     public FlowerIntake FlowerIntake;
+    public Localization Localization;
 
     // Constructor initializes all your subsystems at once
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -29,6 +31,7 @@ public class Robot {
         this.FlyWheel = new FlyWheel(hardwareMap);
         this.NectarSensor = new NectarSensor(hardwareMap);
         this.FlowerIntake = new FlowerIntake(hardwareMap);
+        this.Localization = new Localization(hardwareMap, telemetry);
 
     }
 }
