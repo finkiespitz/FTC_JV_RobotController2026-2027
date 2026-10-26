@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.common;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.Subsystems.FlowerIntake;
-import org.firstinspires.ftc.teamcode.common.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.common.Subsystems.DriveTrain;
-import org.firstinspires.ftc.teamcode.common.Subsystems.Limelight;
-import org.firstinspires.ftc.teamcode.common.Subsystems.FlyWheel;
-import org.firstinspires.ftc.teamcode.common.Subsystems.NectarSensor;
+import org.firstinspires.ftc.teamcode.common.subsystems.FlowerIntake;
+import org.firstinspires.ftc.teamcode.common.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.common.subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
+import org.firstinspires.ftc.teamcode.common.subsystems.FlyWheel;
+import org.firstinspires.ftc.teamcode.common.subsystems.NectarSensor;
 import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;

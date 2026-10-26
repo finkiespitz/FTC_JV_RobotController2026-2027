@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.common.Subsystems;
+package org.firstinspires.ftc.teamcode.common.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
