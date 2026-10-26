@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.teleop;
 import org.firstinspires.ftc.teamcode.common.Robot;
-import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
-@TeleOp(name = "TeleOp", group = "Linear OpMode")
-public class TeleOpBot1 extends LinearOpMode {
-
+@TeleOp(name = "TeleOpBlue", group = "Linear OpMode")
+public class TeleOpBot1Blue extends LinearOpMode {
+    private boolean blueTeam = true;
     @Override
     public void runOpMode() {
         // Instantiate the object-oriented master class
@@ -30,8 +29,8 @@ public class TeleOpBot1 extends LinearOpMode {
             robot.Intake.run(gamepad2,
                     telemetry);
 
-            // 3. Run FlyWheel Subsystem
-            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(),
+             // 3. Run FlyWheel Subsystem
+            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPoseBlue(),
                     robot.NectarSensor.run(), telemetry);
 
             //4. Run Flower Intake Subsystem

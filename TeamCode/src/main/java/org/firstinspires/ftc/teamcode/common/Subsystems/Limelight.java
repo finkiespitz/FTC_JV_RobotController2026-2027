@@ -20,37 +20,65 @@ public class Limelight {
     }
 
 
-    public double getPose() {
+    public double getPoseRed() {
         LLResult result = limelight.getLatestResult();
 
         if (result != null && result.isValid()) {
-
-
             List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
 
-
-            if (!AprilTags.isEmpty()) {
-                //Grab the first AprilTag detected in the frame
+            if (AprilTags != null && !AprilTags.isEmpty()) {
                 LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+                int tagId = (int) targetTag.getFiducialId();
 
-                //Get the tag's position relative to the camera lens
+                // If it's NOT one of the allowed tags, immediately return 0
+                if (!((tagId >= 30 && tagId <= 37))) {
+                    return 0;
+                }
+
+                // Otherwise, proceed with the distance calculation
                 Pose3D cameraPose = targetTag.getCameraPoseTargetSpace();
 
                 if (cameraPose != null) {
-                    //Extract raw positioning coordinates (SDK maps positions using standard primitive doubles .x, .y, .z)
                     double x = cameraPose.getPosition().x;
                     double y = cameraPose.getPosition().y;
                     double z = cameraPose.getPosition().z;
 
-                    //3D Pythagorean theorem to find the true straight-line distance
-                    double distanceFromHive = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
-
-                    return distanceFromHive;
+                    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
                 }
             }
         }
 
-        // Return -1.0 if nothing is found
+        return 0;
+    }
+
+    public double getPoseBlue() {
+        LLResult result = limelight.getLatestResult();
+
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+
+            if (AprilTags != null && !AprilTags.isEmpty()) {
+                LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+                int tagId = (int) targetTag.getFiducialId();
+
+                // If it's NOT one of the allowed tags, immediately return 0
+                if (!((tagId >= 38 && tagId <= 45))) {
+                    return 0;
+                }
+
+                // Otherwise, proceed with the distance calculation
+                Pose3D cameraPose = targetTag.getCameraPoseTargetSpace();
+
+                if (cameraPose != null) {
+                    double x = cameraPose.getPosition().x;
+                    double y = cameraPose.getPosition().y;
+                    double z = cameraPose.getPosition().z;
+
+                    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+                }
+            }
+        }
+
         return 0;
     }
 }
