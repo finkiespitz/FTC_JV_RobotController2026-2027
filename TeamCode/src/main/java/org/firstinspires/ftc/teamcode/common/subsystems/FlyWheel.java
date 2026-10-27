@@ -25,13 +25,18 @@ public class FlyWheel {
     public void run(Gamepad gamepad1, Gamepad gamepad2,
                     double distanceFromHive, boolean nectarIsNext, Telemetry telemetry) {
 
+        boolean flyWheelOn = false;
         double flyWheelPower;
         double nectarSpeed = distanceFromHive * nectarFactor;
         double pollenSpeed = distanceFromHive * pollenFactor;
 
         if (gamepad2.x && !previousXButton2) {
-            flyWheelPower = nectarIsNext ? nectarSpeed : pollenSpeed;
-        } else flyWheelPower = 0;
+            flyWheelOn = !flyWheelOn;}
+
+        if(flyWheelOn){
+         flyWheelPower = nectarIsNext ? nectarSpeed : pollenSpeed;
+        }
+        else flyWheelPower = 0;
 
         previousXButton2 = gamepad2.x;
 

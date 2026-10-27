@@ -14,11 +14,14 @@ public class DriveTrain {
 
     private final Localization localization;
     private final DcMotor frontLeft, frontRight, backLeft, backRight;
+
+
     private boolean slowMode = false;
     private boolean prevLeftStickButton = false;
     private boolean prevLeftAndRightBumper;
     private static double kpTurn = 1.5;
     private static double kpStrafe = 0.04;
+
 
     public DriveTrain(Localization localization, HardwareMap hardwareMap) {
         this.localization = localization;

@@ -15,7 +15,7 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import org.firstinspires.ftc.teamcode.common.pedroPathing.Constants;
 
 
-@Autonomous(name = "Red", group = "Autonomous")
+@Autonomous(name = "AutoRed", group = "Autonomous")
 public class AutoRed extends LinearOpMode{
     ///                                                                                                 ///
     /// FYI for you Tristen: Whey you are watching any sort of video on how to do Autonomous,           ///
