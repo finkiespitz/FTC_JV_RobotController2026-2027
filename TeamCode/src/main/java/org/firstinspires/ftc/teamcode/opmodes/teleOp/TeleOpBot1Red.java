@@ -9,7 +9,8 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 @TeleOp(name = "TeleOpRed", group = "Linear OpMode")
 public class TeleOpBot1Red extends LinearOpMode {
-    private boolean redTeam = true;
+    boolean redTeam = true;
+
     @Override
     public void runOpMode() {
         // Instantiate the object-oriented master class
@@ -22,8 +23,12 @@ public class TeleOpBot1Red extends LinearOpMode {
         robot.Localization.resetHeading();
 
         while (opModeIsActive()) {
+
+            ///update localization
+            robot.Localization.update();
+
             // 1. Run Drivetrain Subsystem
-            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(),
+            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), redTeam, robot.Limelight,
                     telemetry);
 
             // 2. Run Intake Subsystem
@@ -31,14 +36,18 @@ public class TeleOpBot1Red extends LinearOpMode {
                     telemetry);
 
             // 3. Run FlyWheel Subsystem
-            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPoseRed(),
+            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
                     robot.NectarSensor.run(), telemetry);
 
             //4. Run Flower Intake Subsystem
             robot.FlowerIntake.run(gamepad2,
                     telemetry);
 
-            robot.Localization.update();
+            //5. Run Transfer Subsystem
+            robot.Transfer.run(gamepad2,
+                    telemetry);
+
+            telemetry.update();
         }
     }
 }

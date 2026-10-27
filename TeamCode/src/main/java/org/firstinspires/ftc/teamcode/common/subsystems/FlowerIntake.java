@@ -27,8 +27,6 @@ public class FlowerIntake {
         prevDPadUp = gamepad2.dpad_up;}
 
         telemetry.addData("flowerServo Pose", servo.getPosition());
-
-        telemetry.update();
     }
     public void setPose(double pose){
         servo.setPosition(pose);

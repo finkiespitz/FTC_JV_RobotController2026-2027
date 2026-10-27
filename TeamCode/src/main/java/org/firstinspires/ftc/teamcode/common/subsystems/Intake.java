@@ -22,8 +22,6 @@ public class Intake {
 
         if (gamepad2.right_trigger_pressed) {
             intakePower = gamepad2.right_trigger;
-        } else if (gamepad2.left_trigger_pressed) {
-            intakePower = gamepad2.left_trigger;
         }
 
         intakeMotor.setPower(intakePower);

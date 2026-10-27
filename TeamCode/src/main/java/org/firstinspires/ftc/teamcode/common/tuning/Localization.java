@@ -71,20 +71,9 @@ public class Localization {
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 
-    public double getX() {
-        return pinpoint.getPosition().getX(DistanceUnit.INCH);
-    }
-
-    public double getY() {
-        return pinpoint.getPosition().getY(DistanceUnit.INCH);
-    }
-
-    public double getHeadingRad(){
-        double headingRad = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-        return headingRad;
-    }
-    //call this to reset heading
+    public double getX() {return pinpoint.getPosition().getX(DistanceUnit.INCH);}
+    public double getY() {return pinpoint.getPosition().getY(DistanceUnit.INCH);}
+    public double getHeadingRad(){return -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);}
     public void resetHeading() {
         imu.resetYaw();
     }

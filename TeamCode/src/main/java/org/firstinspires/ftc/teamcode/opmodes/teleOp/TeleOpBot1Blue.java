@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleOp;
 import org.firstinspires.ftc.teamcode.common.Robot;
+import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,7 +9,8 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 @TeleOp(name = "TeleOpBlue", group = "Linear OpMode")
 public class TeleOpBot1Blue extends LinearOpMode {
-    private boolean blueTeam = true;
+    boolean redTeam = false;
+
     @Override
     public void runOpMode() {
         // Instantiate the object-oriented master class
@@ -21,8 +23,12 @@ public class TeleOpBot1Blue extends LinearOpMode {
         robot.Localization.resetHeading();
 
         while (opModeIsActive()) {
+
+            ///update localization
+            robot.Localization.update();
+
             // 1. Run Drivetrain Subsystem
-            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(),
+            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), redTeam, robot.Limelight,
                     telemetry);
 
             // 2. Run Intake Subsystem
@@ -30,14 +36,18 @@ public class TeleOpBot1Blue extends LinearOpMode {
                     telemetry);
 
              // 3. Run FlyWheel Subsystem
-            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPoseBlue(),
-                    robot.NectarSensor.run(), telemetry);
+            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
+                    robot.NectarSensor.run(telemetry), telemetry);
 
             //4. Run Flower Intake Subsystem
             robot.FlowerIntake.run(gamepad2,
                     telemetry);
 
-            robot.Localization.update();
+            //5. Run Transfer Subsystem
+            robot.Transfer.run(gamepad2,
+                    telemetry);
+
+            telemetry.update();
         }
     }
 }

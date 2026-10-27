@@ -20,63 +20,36 @@ public class Limelight {
     }
 
 
-    public double getPoseRed() {
+    public double getPose(boolean redTeam) {
         LLResult result = limelight.getLatestResult();
 
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
-
-            if (AprilTags != null && !AprilTags.isEmpty()) {
-                LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
-                int tagId = (int) targetTag.getFiducialId();
-
-                // If it's NOT one of the allowed tags, immediately return 0
-                if (!((tagId >= 30 && tagId <= 37))) {
-                    return 0;
-                }
-
-                // Otherwise, proceed with the distance calculation
-                Pose3D cameraPose = targetTag.getCameraPoseTargetSpace();
-
-                if (cameraPose != null) {
-                    double x = cameraPose.getPosition().x;
-                    double y = cameraPose.getPosition().y;
-                    double z = cameraPose.getPosition().z;
-
-                    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
-                }
-            }
+        if (result == null || !result.isValid()) {
+            return 0;
         }
 
-        return 0;
-    }
+        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+        if (AprilTags == null || AprilTags.isEmpty()) {
+            return 0;
+        }
 
-    public double getPoseBlue() {
-        LLResult result = limelight.getLatestResult();
+        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+        int tagId = targetTag.getFiducialId();
 
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+        // Validate Tag ID based on Alliance Team
+        if (redTeam) {
+            if (tagId < 30 || tagId > 37) return 0;
+        } else {
+            if (tagId < 38 || tagId > 45) return 0;
+        }
 
-            if (AprilTags != null && !AprilTags.isEmpty()) {
-                LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
-                int tagId = (int) targetTag.getFiducialId();
+        // Calculate straight-line distance
+        Pose3D cameraPose = targetTag.getRobotPoseTargetSpace();
+        if (cameraPose != null) {
+            double x = cameraPose.getPosition().x;
+            double y = cameraPose.getPosition().y;
+            double z = cameraPose.getPosition().z;
 
-                // If it's NOT one of the allowed tags, immediately return 0
-                if (!((tagId >= 38 && tagId <= 45))) {
-                    return 0;
-                }
-
-                // Otherwise, proceed with the distance calculation
-                Pose3D cameraPose = targetTag.getCameraPoseTargetSpace();
-
-                if (cameraPose != null) {
-                    double x = cameraPose.getPosition().x;
-                    double y = cameraPose.getPosition().y;
-                    double z = cameraPose.getPosition().z;
-
-                    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
-                }
-            }
+            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
         }
 
         return 0;

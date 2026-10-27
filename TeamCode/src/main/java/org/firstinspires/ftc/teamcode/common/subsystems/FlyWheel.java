@@ -46,11 +46,12 @@ public class FlyWheel {
         if (flyWheelPower > 0) {
             gamepad2.rumble(1.0, 1.0, Gamepad.RUMBLE_DURATION_CONTINUOUS);
             gamepad1.rumble(1.0, 1.0, Gamepad.RUMBLE_DURATION_CONTINUOUS);
-        } else gamepad2.stopRumble();
-        gamepad1.stopRumble();
+        } else{
+            gamepad2.stopRumble();
+            gamepad1.stopRumble();
+        }
 
         telemetry.addData("flyWheel Power", flyWheelPower);
-        telemetry.update();
     }
 
     // 2. AUTONOMOUS METHOD: Bypasses gamepad and targets a direct speed

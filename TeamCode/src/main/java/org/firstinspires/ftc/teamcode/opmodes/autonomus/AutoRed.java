@@ -15,8 +15,8 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import org.firstinspires.ftc.teamcode.common.pedroPathing.Constants;
 
 
-@Autonomous(name = "PedroPath1", group = "Autonomous")
-public class PedroPathingPaths extends LinearOpMode{
+@Autonomous(name = "Red", group = "Autonomous")
+public class AutoRed extends LinearOpMode{
     ///                                                                                                 ///
     /// FYI for you Tristen: Whey you are watching any sort of video on how to do Autonomous,           ///
     /// to only watch a video on Pedro Pathing 3.0, because the syntax for the 3.0 is totally different ///
