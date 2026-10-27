@@ -60,7 +60,7 @@ public class FlyWheel {
     }
 
     // 2. AUTONOMOUS METHOD: Bypasses gamepad and targets a direct speed
-    public void setPower(double power) {
+    public void start(double power) {
         if (power > 1) power = 1;
         if (power < -1) power = -1;
         flyWheel.setPower(power);
