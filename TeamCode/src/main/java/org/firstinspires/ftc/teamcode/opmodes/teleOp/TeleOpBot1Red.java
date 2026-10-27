@@ -37,7 +37,7 @@ public class TeleOpBot1Red extends LinearOpMode {
 
             // 3. Run FlyWheel Subsystem
             robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
-                    robot.NectarSensor.run(), telemetry);
+                    robot.NectarSensor.run(telemetry), telemetry);
 
             //4. Run Flower Intake Subsystem
             robot.FlowerIntake.run(gamepad2,
