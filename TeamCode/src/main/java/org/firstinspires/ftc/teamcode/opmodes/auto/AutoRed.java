@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.common.Robot;
 import org.firstinspires.ftc.teamcode.common.pedroPathing.pedroPaths.PedroPathBlue1;
 import org.firstinspires.ftc.teamcode.common.pedroPathing.pedroPaths.PedroPathRed1;
 
-@Autonomous(name = "Auto Red", group = "Autonomous")
+@Autonomous(name = "Auto Red1", group = "Autonomous")
 public class AutoRed extends LinearOpMode {
 
     private Follower follower;
@@ -19,6 +19,7 @@ public class AutoRed extends LinearOpMode {
 
     // Set to true to filter the Red alliance Hive tags correctly during autonomous shooting
     private final boolean redTeam = true;
+    private int shotsFiredInState = 0;
 
     // The states our autonomous machine will step through sequentially
     private enum AutoState {
@@ -55,7 +56,7 @@ public class AutoRed extends LinearOpMode {
 
             // Extract native milliseconds from Pedro's timer and declare elapsedSeconds decimal safely
             double elapsedMillis = stateTimer.milliseconds();
-            double elapsedSeconds = elapsedMillis / 1000.0;
+            double elapsedSeconds = stateTimer.seconds();
 
             switch (currentState) {
 
@@ -65,14 +66,13 @@ public class AutoRed extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_GARDEN:
-                    // One-time execution trigger block to start path sequence
                     if (elapsedSeconds < 0.1) {
                         follower.follow(paths.gardenIntake());
-                        robot.Intake.setPowerDirect(1.0); // Spin vacuum intake wheels forward
+                        robot.Intake.setPowerDirect(1.0);
                     }
 
-                    // Move to next state once robot arrives at destination coordinates
-                    if (!follower.isBusy()) {
+                    // Safety guard: Ensure pathing has actually registered as busy before checking completion
+                    if (elapsedSeconds > 0.3 && !follower.isBusy()) {
                         setNextState(AutoState.DRIVE_TO_HIVE);
                     }
                     break;
@@ -88,9 +88,15 @@ public class AutoRed extends LinearOpMode {
                         robot.Intake.setPowerDirect(0.0);
                     }
 
+                    if (follower.completion() >= 0.80) {
+                        double currentDistance = robot.Limelight.getPose(redTeam);
+                        boolean nectarNext = robot.NectarSensor.run(telemetry);
+                        robot.FlyWheel.runAuto(currentDistance, nectarNext);
+                    }
+
                     // Arrived at the Hive shooting station
-                    if (!follower.isBusy()) {
-                        robot.Intake.setPowerDirect(0.0); // Safety fallback cutoff
+                    if (elapsedSeconds > 0.3 && !follower.isBusy()) {
+                        robot.Intake.setPowerDirect(0.0);
                         setNextState(AutoState.SHOOT_GARDEN_PIECES);
                     }
                     break;
@@ -106,14 +112,14 @@ public class AutoRed extends LinearOpMode {
                         follower.follow(paths.park());
                     }
 
-                    if (!follower.isBusy()) {
+                    if (elapsedSeconds > 0.3 && !follower.isBusy()) {
                         setNextState(AutoState.DONE);
                     }
                     break;
 
                 case DONE:
                     // Explicitly isolate power channels to prevent motor stall heating
-                    robot.FlyWheel.start(0);
+                    robot.FlyWheel.stop();
                     robot.Transfer.setPowerDirect(0);
                     robot.Intake.setPowerDirect(0);
                     break;
@@ -132,6 +138,7 @@ public class AutoRed extends LinearOpMode {
      */
     private void setNextState(AutoState nextState) {
         currentState = nextState;
+        shotsFiredInState = 0;
         stateTimer.reset();
     }
 
@@ -140,27 +147,28 @@ public class AutoRed extends LinearOpMode {
      */
     private void runAutoShooterSequence(int targetCount, long currentMillis, AutoState nextState) {
         double currentDistance = robot.Limelight.getPose(redTeam);
-        boolean nectarIsNext = robot.NectarSensor.run(telemetry);
+        boolean nectarNext = robot.NectarSensor.run(telemetry);
 
         long singleShotTime = 700; // 350ms spool-up + 350ms feed window duration
         long totalSequenceTimeNeeded = targetCount * singleShotTime;
 
         if (currentMillis < totalSequenceTimeNeeded) {
+            // Determine which specific shot number we are on based on time elapsed
+            shotsFiredInState = (int) (currentMillis / singleShotTime);
             long timeIntoCurrentShot = currentMillis % singleShotTime;
 
-            // Phase A: Rev shooter wheels up using distance maps (0ms to 350ms)
+            // Phase A: Rev shooter wheels up using distance maps (0ms to 349ms)
             if (timeIntoCurrentShot < 350) {
-                robot.FlyWheel.run(gamepad1, gamepad2, currentDistance, nectarIsNext, telemetry);
+                robot.FlyWheel.runAuto(currentDistance, nectarNext);
                 robot.Transfer.setPowerDirect(0.0);
             }
-            // Phase B: Actuate transfer motor gate kicker forward to punch shot (351ms to 700ms)
+            // Phase B: Actuate transfer motor gate kicker forward to punch shot (350ms to 699ms)
             else {
-                robot.FlyWheel.run(gamepad1, gamepad2, currentDistance, nectarIsNext, telemetry);
+                robot.FlyWheel.runAuto(currentDistance, nectarNext);
                 robot.Transfer.setPowerDirect(1.0);
             }
         } else {
-            // Sequence completed successfully, stop everything and shift states
-            robot.FlyWheel.start(0);
+            robot.FlyWheel.stop();
             robot.Transfer.setPowerDirect(0);
             setNextState(nextState);
         }

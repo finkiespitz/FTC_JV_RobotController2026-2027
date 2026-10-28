@@ -59,11 +59,18 @@ public class FlyWheel {
         telemetry.addData("flyWheel Power", flyWheelPower);
     }
 
-    // 2. AUTONOMOUS METHOD: Bypasses gamepad and targets a direct speed
-    public void start(double power) {
-        if (power > 1) power = 1;
-        if (power < -1) power = -1;
-        flyWheel.setPower(power);
+    // 2. AUTONOMOUS METHOD: Bypasses gamepad
+    public void runAuto(double distanceFromHive, boolean nectarNext) {
+        double nectarSpeed = distanceFromHive * nectarFactor;
+        double pollenSpeed = distanceFromHive * pollenFactor;
+
+        double flyWheelPower = nectarNext ? nectarSpeed : pollenSpeed;
+        flyWheel.setPower(flyWheelPower);
+
     }
+    public void stop() {
+        flyWheel.setPower(0);
+    }
+
 }
 
