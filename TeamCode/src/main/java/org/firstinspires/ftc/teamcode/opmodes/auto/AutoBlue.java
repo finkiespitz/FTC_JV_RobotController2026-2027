@@ -72,7 +72,7 @@ public class AutoBlue extends LinearOpMode {
                     }
 
                     // Safety guard: Ensure pathing has actually registered as busy before checking completion
-                    if (elapsedSeconds > 0.3 && !follower.isBusy()) {
+                    if (elapsedSeconds > 5 && !follower.isBusy()) {
                         setNextState(AutoState.DRIVE_TO_HIVE);
                     }
                     break;
@@ -84,7 +84,7 @@ public class AutoBlue extends LinearOpMode {
                     }
 
                     // HALFWAY CUTOFF CHECK: Stop intake at 50% path line completion progress
-                    if (follower.completion() >= 0.50) {
+                    if (follower.completion() >= 0.50 && follower.completion() < 0.80) {
                         robot.Intake.setPowerDirect(0.0);
                     }
 
@@ -95,7 +95,7 @@ public class AutoBlue extends LinearOpMode {
                     }
 
                     // Arrived at the Hive shooting station
-                    if (elapsedSeconds > 0.3 && !follower.isBusy()) {
+                    if (elapsedSeconds > 0.5 && !follower.isBusy()) {
                         robot.Intake.setPowerDirect(0.0);
                         setNextState(AutoState.SHOOT_GARDEN_PIECES);
                     }
@@ -112,7 +112,7 @@ public class AutoBlue extends LinearOpMode {
                         follower.follow(paths.park());
                     }
 
-                    if (elapsedSeconds > 0.3 && !follower.isBusy()) {
+                    if (elapsedSeconds > 0.5 && !follower.isBusy()) {
                         setNextState(AutoState.DONE);
                     }
                     break;
