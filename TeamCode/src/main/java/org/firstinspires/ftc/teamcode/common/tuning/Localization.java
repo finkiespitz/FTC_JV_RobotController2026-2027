@@ -20,15 +20,15 @@ public class Localization {
 
     public static double START_X = 0.0;
     public static double START_Y = 0.0;
-    public static double START_HEADING = 0.0;
+    public static double START_HEADING = -90;
 
     public Localization(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setOffsets(-100.0, 100.0, DistanceUnit.INCH);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.setOffsets(-3.6823702233982836, 2.8226675198772764, DistanceUnit.INCH);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         Pose2D startPose = new Pose2D(DistanceUnit.INCH, START_X, START_Y, AngleUnit.DEGREES, START_HEADING);
         pinpoint.setPosition(startPose);

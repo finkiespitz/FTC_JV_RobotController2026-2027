@@ -28,24 +28,24 @@ public class TeleOpBot1Blue extends LinearOpMode {
             robot.Localization.update();
 
             // 1. Run Drivetrain Subsystem
-            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), redTeam, robot.Limelight,
+            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), redTeam, robot.Limelight.getTx(redTeam),
                     telemetry);
 
             // 2. Run Intake Subsystem
-            robot.Intake.run(gamepad2,
-                    telemetry);
+            //robot.Intake.run(gamepad2,
+            //        telemetry);
 
              // 3. Run FlyWheel Subsystem
-            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
-                    robot.NectarSensor.run(telemetry), telemetry);
+            //robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
+            //        robot.NectarSensor.run(telemetry), telemetry);
 
             //4. Run Flower Intake Subsystem
-            robot.FlowerIntake.run(gamepad2,
-                    telemetry);
+            //robot.FlowerIntake.run(gamepad2,
+            //        telemetry);
 
             //5. Run Transfer Subsystem
-            robot.Transfer.run(gamepad2,
-                    telemetry);
+            //robot.Transfer.run(gamepad2,
+            //        telemetry);
 
             telemetry.update();
         }

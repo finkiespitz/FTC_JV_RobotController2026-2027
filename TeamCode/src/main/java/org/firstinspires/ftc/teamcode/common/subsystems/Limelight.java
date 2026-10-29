@@ -54,4 +54,61 @@ public class Limelight {
 
         return 0;
     }
+    public double getTx(boolean redTeam) {
+        LLResult result = limelight.getLatestResult();
+
+        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+        if (AprilTags == null || AprilTags.isEmpty()) {
+            return 0;
+        }
+
+        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+        int tagId = targetTag.getFiducialId();
+
+        if (redTeam) {
+            if (tagId < 30 || tagId > 37) return 0;
+        } else {
+            if (tagId < 38 || tagId > 45) return 0;
+        }
+        return result.getTx();
+
+    }
+    public double getTy(boolean redTeam) {
+        LLResult result = limelight.getLatestResult();
+
+        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+        if (AprilTags == null || AprilTags.isEmpty()) {
+            return 0;
+        }
+
+        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+        int tagId = targetTag.getFiducialId();
+
+        if (redTeam) {
+            if (tagId < 30 || tagId > 37) return 0;
+        } else {
+            if (tagId < 38 || tagId > 45) return 0;
+        }
+        return result.getTy();
+
+    }
+    public double getTa(boolean redTeam) {
+        LLResult result = limelight.getLatestResult();
+
+        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+        if (AprilTags == null || AprilTags.isEmpty()) {
+            return 0;
+        }
+
+        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+        int tagId = targetTag.getFiducialId();
+
+        if (redTeam) {
+            if (tagId < 30 || tagId > 37) return 0;
+        } else {
+            if (tagId < 38 || tagId > 45) return 0;
+        }
+        return result.getTa();
+
+    }
 }

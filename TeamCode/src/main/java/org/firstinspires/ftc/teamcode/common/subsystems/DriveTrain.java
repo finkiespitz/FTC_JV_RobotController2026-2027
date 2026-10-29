@@ -42,7 +42,7 @@ public class DriveTrain {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void run(Gamepad gamepad1, double headingRad, boolean redTeam, Limelight limelight,
+    public void run(Gamepad gamepad1, double headingRad, boolean redTeam, double Tx,
                     Telemetry telemetry) {
 
 
@@ -67,25 +67,16 @@ public class DriveTrain {
             twist = Math.max(-0.6, Math.min(0.6, twist)); // Clamp rotation to prevent spinning too wildly
 
             // 2. Lock Strafe Centering (Limelight TX crosshair error-based)
-            LLResult result = limelight.limelight.getLatestResult();
-            if (result != null && result.isValid()) {
-                // tx reads the degrees off-center horizontally from the camera to the target
-                double tx = result.getTx();
 
-                // Only adjust strafe if Limelight is seeing a verified target tag
-                if (tx != 0) {
-                    strafe = tx * kpStrafe;
-                    strafe = Math.max(-0.5, Math.min(0.5, strafe)); // Clamp slide speed to safely slide across the target
-                    telemetry.addData("[Auto-Align]", "Tag Locked! Horizontal Offset: %.2f deg | Strafe Power: %.2f", tx, strafe);
-                } else {
-                    telemetry.addData("[Auto-Align]", "Tag detected but centered or invalid. Searching...");
-                }
+            // Only adjust strafe if Limelight is seeing a verified target tag
+            if (Math.abs(Tx) != 0) {
+                strafe = Tx * kpStrafe;
+                strafe = Math.max(-0.5, Math.min(0.5, strafe)); // Clamp slide speed to safely slide across the target
+                telemetry.addData("[Auto-Align]", "Tag Locked! Horizontal Offset: %.2f deg | Strafe Power: %.2f", Tx, strafe);
             } else {
-                telemetry.addData("[Auto-Align]", "Scanning for nearest alliance hive tag...");
+                telemetry.addData("[Auto-Align]", "Tag detected but centered or invalid. Searching...");
             }
         }
-
-
 
         // Apply controller dead-zones
         if (Math.abs(drive) < 0.07) drive = 0;

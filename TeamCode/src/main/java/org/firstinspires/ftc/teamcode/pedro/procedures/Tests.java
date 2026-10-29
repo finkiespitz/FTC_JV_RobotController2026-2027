@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedro.procedures;
 
 import com.pedropathing.algorithm.Algorithm;
-import com.pedropathing.algorithm.Foresight;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.drivetrain.Drivetrain;
 import com.pedropathing.follower.Follower;
@@ -47,7 +46,7 @@ public class Tests extends Procedure {
     Supplier<Algorithm> algorithmSupplier;
     Function<HardwareMap, Follower> followerFunction;
 
-    public Tests(Function<HardwareMap, Drivetrain> drivetrainFunction, Function<HardwareMap, Localizer> localizerFunction, Foresight algorithmSupplier) {
+    public Tests(Function<HardwareMap, Drivetrain> drivetrainFunction, Function<HardwareMap, Localizer> localizerFunction, Supplier<Algorithm> algorithmSupplier) {
         super("Tests", "A procedure for testing the Follower.");
         this.drivetrainFunction = drivetrainFunction;
         this.localizerFunction = localizerFunction;
