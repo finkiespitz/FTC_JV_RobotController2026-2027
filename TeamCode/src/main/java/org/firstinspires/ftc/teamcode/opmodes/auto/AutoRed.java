@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.common.pedroPathing.pedroPaths.PedroPathRe
 @Autonomous(name = "Auto Red1", group = "Autonomous")
 public class AutoRed extends LinearOpMode {
 
-    //private Variables
+    //private Variables v
     private Follower follower;
     private Robot robot;
     private PedroPathRed1 paths;
