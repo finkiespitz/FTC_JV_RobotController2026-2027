@@ -9,10 +9,12 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class FlyWheel {
-    private static double nectarFactor = 0.30;
-    private static double pollenFactor = 0.10;
+    public static double nectarFactor = 0.30;
+    public static double pollenFactor = 0.10;
     private final DcMotor flyWheel;
     private boolean previousXButton2;
+
+   private boolean flyWheelOn = false;
 
     public FlyWheel(HardwareMap hardwareMap) {
 
@@ -25,7 +27,6 @@ public class FlyWheel {
     public void run(Gamepad gamepad1, Gamepad gamepad2,
                     double distanceFromHive, boolean nectarIsNext, Telemetry telemetry) {
 
-        boolean flyWheelOn = false;
         double flyWheelPower;
         double nectarSpeed = distanceFromHive * nectarFactor;
         double pollenSpeed = distanceFromHive * pollenFactor;

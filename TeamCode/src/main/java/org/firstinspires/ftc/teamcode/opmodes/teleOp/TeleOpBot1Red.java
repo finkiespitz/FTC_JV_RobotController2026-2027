@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleOp;
 
 import org.firstinspires.ftc.teamcode.common.Robot;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.acmerobotics.dashboard.config.Config;
@@ -13,6 +14,9 @@ public class TeleOpBot1Red extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+
         // Instantiate the object-oriented master class
         Robot robot = new Robot(hardwareMap, telemetry);
 
@@ -40,8 +44,8 @@ public class TeleOpBot1Red extends LinearOpMode {
                     robot.NectarSensor.run(telemetry), telemetry);
 
             //4. Run Flower Intake Subsystem
-            robot.FlowerIntake.run(gamepad2,
-                    telemetry);
+            //robot.FlowerIntake.run(gamepad2,
+            //        telemetry);
 
             //5. Run Transfer Subsystem
             robot.Transfer.run(gamepad2,

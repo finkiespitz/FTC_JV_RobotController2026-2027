@@ -24,12 +24,12 @@ public class Limelight {
         LLResult result = limelight.getLatestResult();
 
         if (result == null || !result.isValid()) {
-            return 0;
+            return 1000;
         }
 
         List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
         if (AprilTags == null || AprilTags.isEmpty()) {
-            return 0;
+            return 1000;
         }
 
         LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
@@ -37,9 +37,9 @@ public class Limelight {
 
         // Validate Tag ID based on Alliance Team
         if (redTeam) {
-            if (tagId < 30 || tagId > 37) return 0;
+            if (tagId < 30 || tagId > 37) return 1000;
         } else {
-            if (tagId < 38 || tagId > 45) return 0;
+            if (tagId < 38 || tagId > 45) return 1000;
         }
 
         // Calculate straight-line distance
@@ -52,7 +52,7 @@ public class Limelight {
             return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
         }
 
-        return 0;
+        return 1000;
     }
     public double getTx(boolean redTeam) {
         LLResult result = limelight.getLatestResult();

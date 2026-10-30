@@ -19,8 +19,8 @@ public class DriveTrain {
     private boolean slowMode = false;
     private boolean prevLeftStickButton = false;
     private boolean prevLeftAndRightBumper;
-    private static double kpTurn = 1.5;
-    private static double kpStrafe = 0.04;
+    public static double kpTurn = 1.8;
+    public static double kpStrafe = 0.04;
 
 
     public DriveTrain(Localization localization, HardwareMap hardwareMap) {
@@ -46,13 +46,14 @@ public class DriveTrain {
                     Telemetry telemetry) {
 
 
+        double headingDeg = Math.toDegrees(headingRad);
         // Toggle slow mode
         if (gamepad1.left_stick_button && !prevLeftStickButton) {
             slowMode = !slowMode;
         }
         prevLeftStickButton = gamepad1.left_stick_button;
 
-        double drive = gamepad1.left_stick_y;
+        double drive = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double twist = gamepad1.right_stick_x;
 
@@ -72,9 +73,6 @@ public class DriveTrain {
             if (Math.abs(Tx) != 0) {
                 strafe = Tx * kpStrafe;
                 strafe = Math.max(-0.5, Math.min(0.5, strafe)); // Clamp slide speed to safely slide across the target
-                telemetry.addData("[Auto-Align]", "Tag Locked! Horizontal Offset: %.2f deg | Strafe Power: %.2f", Tx, strafe);
-            } else {
-                telemetry.addData("[Auto-Align]", "Tag detected but centered or invalid. Searching...");
             }
         }
 
@@ -84,8 +82,9 @@ public class DriveTrain {
         if (Math.abs(twist) < 0.07) twist = 0;
 
         // Field-centric orientation geometry math
-        double rotatedDrive = drive * Math.cos(headingRad) + strafe * Math.sin(headingRad);
-        double rotatedStrafe = -drive * Math.sin(headingRad) + strafe * Math.cos(headingRad);
+        double rotatedStrafe = (strafe * Math.cos(headingRad)) - (drive * Math.sin(headingRad));
+        double rotatedDrive = (strafe * Math.sin(headingRad)) + (drive * Math.cos(headingRad));
+
 
         // Map drive vectors to power arrays
         double[] speeds = {
@@ -119,6 +118,5 @@ public class DriveTrain {
 
 
         prevLeftAndRightBumper = gamepad1.left_bumper && gamepad1.right_bumper;
-
     }
 }

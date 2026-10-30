@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.common.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,12 +13,12 @@ public class Transfer {
 
         transferMotor = hardwareMap.get(DcMotor.class, "transferMotor");
 
-        transferMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void run(Gamepad gamepad2, Telemetry telemetry) {
         // If Y is held down, run the motor at full power. Otherwise, stop it completely.
-        if (gamepad2.y) {
+        if (gamepad2.a) {
             transferMotor.setPower(1.0);
         } else {
             transferMotor.setPower(0.0);

@@ -1,24 +1,23 @@
 package org.firstinspires.ftc.teamcode.common.subsystems;
 
-// 1. PLACE IMPORTS AT THE VERY TOP OF THE FILE
 import android.graphics.Color;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class NectarSensor {
-    private final ColorSensor colorSensor;
+    //private final ColorSensor colorSensor;
 
     // Minimum light level (Value/Brightness) to ensure a game piece is actually in the tray
     private static final int COLOR_THRESHOLD = 300;
 
     public NectarSensor(HardwareMap hardwareMap) {
-        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+        //colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
     }
 
     public boolean run(Telemetry telemetry) {
         // Read raw channel values
-        int red = colorSensor.red();
+      /*  int red = colorSensor.red();
         int blue = colorSensor.blue();
         int green = colorSensor.green();
 
@@ -59,6 +58,7 @@ public class NectarSensor {
         // Extremely useful live dashboard tuning tool for tournament field calibrations
         telemetry.addData("Live Sensor Hue", "%.1f deg", hue);
 
-        return nectarDetected;
+        return nectarDetected;*/
+        return false;
     }
 }

@@ -12,7 +12,7 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap) {
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
     }
 
     // 1. TELEOP CALLS THIS: Utilizes Gamepads
@@ -22,6 +22,10 @@ public class Intake {
 
         if (gamepad2.right_trigger_pressed) {
             intakePower = gamepad2.right_trigger;
+        }
+
+        if (gamepad2.left_trigger_pressed) {
+            intakePower = -gamepad2.left_trigger;
         }
 
         intakeMotor.setPower(intakePower);

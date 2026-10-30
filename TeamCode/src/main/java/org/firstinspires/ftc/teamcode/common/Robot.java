@@ -29,11 +29,11 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         this.Localization = new Localization(hardwareMap, telemetry);
         this.driveTrain = new DriveTrain(Localization, hardwareMap);
-        //this.Intake = new Intake(hardwareMap);
-        //this.Limelight = new Limelight(hardwareMap);
-        //this.FlyWheel = new FlyWheel(hardwareMap);
-        //this.NectarSensor = new NectarSensor(hardwareMap);
+        this.Intake = new Intake(hardwareMap);
+        this.Limelight = new Limelight(hardwareMap);
+        this.FlyWheel = new FlyWheel(hardwareMap);
+        this.NectarSensor = new NectarSensor(hardwareMap);
         //this.FlowerIntake = new FlowerIntake(hardwareMap);
-        //this.Transfer = new Transfer (hardwareMap);
+        this.Transfer = new Transfer (hardwareMap);
     }
 }
