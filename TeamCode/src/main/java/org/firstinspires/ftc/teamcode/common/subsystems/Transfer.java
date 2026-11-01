@@ -17,12 +17,16 @@ public class Transfer {
     }
 
     public void run(Gamepad gamepad2, Telemetry telemetry) {
-        // If Y is held down, run the motor at full power. Otherwise, stop it completely.
-        if (gamepad2.a) {
-            transferMotor.setPower(1.0);
-        } else {
-            transferMotor.setPower(0.0);
+        double transferPower = 0;
+
+        if (gamepad2.right_trigger_pressed) {
+            transferPower = 1;
         }
+
+        if (gamepad2.left_trigger_pressed) {
+            transferPower = -1;
+        }
+        transferMotor.setPower(transferPower);
 
         telemetry.addData("Transfer Motor Running", gamepad2.a);
     }

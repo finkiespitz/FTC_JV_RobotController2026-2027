@@ -21,11 +21,11 @@ public class Intake {
         double intakePower = 0;
 
         if (gamepad2.right_trigger_pressed) {
-            intakePower = gamepad2.right_trigger;
+            intakePower = 0.65;
         }
 
         if (gamepad2.left_trigger_pressed) {
-            intakePower = -gamepad2.left_trigger;
+            intakePower = -0.65;
         }
 
         intakeMotor.setPower(intakePower);

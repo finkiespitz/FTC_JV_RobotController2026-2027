@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.common.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import com.qualcomm.hardware.motors.RevRoboticsUltraPlanetaryHdHexMotor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.acmerobotics.dashboard.config.Config;
@@ -19,6 +21,8 @@ public class FlyWheel {
     public FlyWheel(HardwareMap hardwareMap) {
 
         flyWheel = hardwareMap.get(DcMotor.class, "flyWheel");
+
+        flyWheel.setDirection(DcMotor.Direction.REVERSE);
 
 
     }
