@@ -12,13 +12,13 @@ import com.acmerobotics.dashboard.config.Config;
 public class TeleOpBot1Red extends LinearOpMode {
     boolean redTeam = true;
 
-    @Override
+     @Override
     public void runOpMode() {
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // Instantiate the object-oriented master class
-        Robot robot = new Robot(hardwareMap, telemetry);
+        Robot robot = new Robot(hardwareMap, telemetry, redTeam);
 
         telemetry.addData("Status", "Initialized Clean Robot Hub!");
         telemetry.update();
@@ -26,32 +26,36 @@ public class TeleOpBot1Red extends LinearOpMode {
         waitForStart();
         robot.Localization.resetHeading();
 
-        while (opModeIsActive()) {
+         while (opModeIsActive()) {
 
-            ///update localization
-            robot.Localization.update();
+             //update localization
+             robot.Localization.update();
+             robot.Localization.correctHeadingWithVision(robot.Limelight, redTeam);
 
-            // 1. Run Drivetrain Subsystem
-            robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), redTeam, robot.Limelight.getTx(redTeam),
-                    telemetry);
+             //run Drivetrain Subsystem
+             robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), robot.Limelight.getTx(redTeam), robot.Limelight.getTargetYaw(redTeam), robot.Localization.getY(), robot.Localization.getX(),
+                     telemetry);
 
-            // 2. Run Intake Subsystem
-            robot.Intake.run(gamepad2,
-                    telemetry);
+             robot.turret.run(gamepad2, robot.Localization.getX(), robot.Localization.getY(), redTeam,
+                     telemetry);
 
-            // 3. Run FlyWheel Subsystem
-            robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
-                    robot.NectarSensor.run(telemetry), telemetry);
+             //  Run Intake Subsystem
+             robot.Intake.run(gamepad2,
+                     telemetry);
 
-            //4. Run Flower Intake Subsystem
-            //robot.FlowerIntake.run(gamepad2,
-            //        telemetry);
+             //  Run FlyWheel Subsystem
+             robot.FlyWheel.run(gamepad1, gamepad2, robot.Limelight.getPose(redTeam),
+                     robot.NectarSensor.run(telemetry), telemetry);
 
-            //5. Run Transfer Subsystem
-            robot.Transfer.run(gamepad2,
-                    telemetry);
+             // Run Flower Intake Subsystem
+             //robot.FlowerIntake.run(gamepad2,
+             //        telemetry);
 
-            telemetry.update();
-        }
-    }
+             // Run Transfer Subsystem
+             robot.Transfer.run(gamepad2,
+                     telemetry);
+
+             telemetry.update();
+         }
+     }
 }

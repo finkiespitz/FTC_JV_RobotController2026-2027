@@ -39,12 +39,12 @@ public class AutoBlue extends LinearOpMode {
     private final Pose shoot2Control1 = poseFactory.of(33.6528, 47.5302, 0);
     private final Pose shoot2Control2 = poseFactory.of(1.4226, 126.9303, 0);
     private final Pose shoot2Control3 = poseFactory.of(60.0322, 106.5034, 0);
-    private final Pose shoot2Segment1Heading = poseFactory.of(60, 133, -90);
-    private final Pose shoot2Segment2Start = poseFactory.of(60, 133, -90);
+    private final Pose shoot2Segment1Heading = poseFactory.of(60, 133, 270);
+    private final Pose shoot2Segment2Start = poseFactory.of(60, 133, 270);
     private final Pose shoot2Segment2End = poseFactory.of(60, 133, 0);
     private final Pose shoot2Segment3Start = poseFactory.of(60, 133, 0);
-    private final Pose shoot2Segment3End = poseFactory.of(60, 133, -90);
-    private final Pose parkStart = poseFactory.of(60, 133, -90);
+    private final Pose shoot2Segment3End = poseFactory.of(60, 133, 270);
+    private final Pose parkStart = poseFactory.of(60, 133, 270);
     private final Pose park = poseFactory.of(15.7594, 119.9135, 0);
     private final Pose parkControl1 = poseFactory.of(62.6887, 104.738, 0);
 

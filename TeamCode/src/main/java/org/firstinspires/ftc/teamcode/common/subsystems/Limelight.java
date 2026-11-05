@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.common.subsystems;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes; // NEW: Needed to scan AprilTag blocks
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -14,101 +15,100 @@ public class Limelight {
 
     public Limelight(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
-        limelight.pipelineSwitch(0); // set pipeline 0 to AprilTags in the Limelight UI
-        limelight.start(); // Starts polling data
+        limelight.pipelineSwitch(0);
+        limelight.start();
     }
 
-
-    public double getPose(boolean redTeam) {
+    public String teamFilter(boolean redTeam) {
         LLResult result = limelight.getLatestResult();
 
         if (result == null || !result.isValid()) {
-            return 1000;
+            return "notValid";
         }
 
         List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
         if (AprilTags == null || AprilTags.isEmpty()) {
-            return 1000;
+            return "notValid";
         }
 
         LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
         int tagId = targetTag.getFiducialId();
 
-        // Validate Tag ID based on Alliance Team
         if (redTeam) {
-            if (tagId < 30 || tagId > 37) return 1000;
+            if (tagId < 30 || tagId > 37) return "notValid";
         } else {
-            if (tagId < 38 || tagId > 45) return 1000;
+            if (tagId < 38 || tagId > 45) return "notValid";
         }
-
-        // Calculate straight-line distance
-        Pose3D cameraPose = targetTag.getRobotPoseTargetSpace();
-        if (cameraPose != null) {
-            double x = cameraPose.getPosition().x;
-            double y = cameraPose.getPosition().y;
-            double z = cameraPose.getPosition().z;
-
-            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
-        }
-
-        return 1000;
+        return "valid";
     }
+
+    public double getPose(boolean redTeam) {
+        LLResult result = limelight.getLatestResult();	
+        String validity = teamFilter(redTeam);
+	
+        if (validity.equals("valid") || result == null) {
+            List<LLResultTypes.FiducialResult> AprilTags = null;
+            if (result != null) {
+                AprilTags = result.getFiducialResults();
+            }
+            if (AprilTags == null || AprilTags.isEmpty()) return 1000;
+            
+            LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
+            Pose3D cameraPose = targetTag.getRobotPoseTargetSpace();
+            if (cameraPose != null) {
+                double x = cameraPose.getPosition().x;
+                double y = cameraPose.getPosition().y;
+                double z = cameraPose.getPosition().z;
+
+                return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));}
+	}
+       	return 1000;
+    }
+
     public double getTx(boolean redTeam) {
         LLResult result = limelight.getLatestResult();
+        String validity = teamFilter(redTeam);
 
-        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
-        if (AprilTags == null || AprilTags.isEmpty()) {
-            return 0;
+        if (validity.equals("valid") || result == null) {
+            if (result != null) {
+                return result.getTx();
+            }
+
         }
-
-        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
-        int tagId = targetTag.getFiducialId();
-
-        if (redTeam) {
-            if (tagId < 30 || tagId > 37) return 0;
-        } else {
-            if (tagId < 38 || tagId > 45) return 0;
-        }
-        return result.getTx();
-
+        return 0;
     }
+
     public double getTy(boolean redTeam) {
         LLResult result = limelight.getLatestResult();
+        String validity = teamFilter(redTeam);
 
-        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
-        if (AprilTags == null || AprilTags.isEmpty()) {
-            return 0;
+        if (validity.equals("valid") || result == null) {
+            if (result != null) {
+                return result.getTy();
+            }
         }
-
-        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
-        int tagId = targetTag.getFiducialId();
-
-        if (redTeam) {
-            if (tagId < 30 || tagId > 37) return 0;
-        } else {
-            if (tagId < 38 || tagId > 45) return 0;
-        }
-        return result.getTy();
-
+        return 0;
     }
+
     public double getTa(boolean redTeam) {
         LLResult result = limelight.getLatestResult();
+        String validity = teamFilter(redTeam);
 
-        List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
-        if (AprilTags == null || AprilTags.isEmpty()) {
-            return 0;
+        if (validity.equals("valid") || result == null) {
+            if (result != null) {
+                return result.getTa();
+            }
         }
+        return 0;
+    }
 
-        LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
-        int tagId = targetTag.getFiducialId();
+    public double getTargetYaw(boolean redTeam) {
+        LLResult result = limelight.getLatestResult();
+        String validity = teamFilter(redTeam);
 
-        if (redTeam) {
-            if (tagId < 30 || tagId > 37) return 0;
-        } else {
-            if (tagId < 38 || tagId > 45) return 0;
+        if (validity.equals("valid")) {
+           return result.getBotpose().getOrientation().getYaw(AngleUnit.DEGREES);
         }
-        return result.getTa();
-
+        return 0;
     }
 }
