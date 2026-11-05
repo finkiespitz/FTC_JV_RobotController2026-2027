@@ -133,16 +133,16 @@ public class DriveTrain {
 
 
        	if(gamepad1.right_trigger_pressed && !prevRightTrigger){
-		holdHeading = headingDeg;
-		holdX = x;
-                holdY = y;
+		    holdHeading = headingDeg;
+		    holdX = x;
+            holdY = y;
 
-		integralHeadingError = 0;
-		integralYError = 0;
- 		integralXError = 0;
- 		prevHeadingError = 0;
- 		prevYError = 0;
- 		prevXError = 0;
+		    integralHeadingError = 0;
+		    integralYError = 0;
+ 		    integralXError = 0;
+ 		    prevHeadingError = 0;
+ 		    prevYError = 0;
+ 		    prevXError = 0;
       
                 holdPose = true;
 	}
@@ -155,19 +155,19 @@ public class DriveTrain {
 
 
                 double holdStrafe = holdPoseValues[0];
- 		twist = holdPoseValues[1];
-		double holdDrive = holdPoseValues[2];
- 		robotStrafe = (holdStrafe * Math.cos(headingRad)) - (holdDrive * Math.sin(headingRad)); 
-		robotDrive = (holdStrafe * Math.sin(headingRad)) + (holdDrive * Math.cos(headingRad));
+ 		        twist = holdPoseValues[1];
+		        double holdDrive = holdPoseValues[2];
+ 		        robotStrafe = (holdStrafe * Math.cos(headingRad)) - (holdDrive * Math.sin(headingRad));
+		        robotDrive = (holdStrafe * Math.sin(headingRad)) + (holdDrive * Math.cos(headingRad));
 
             }
 
         if (gamepad1.x) {
             double[] hiveLineUpMovement =  hiveLineUpValues(tx, targetYaw);
 
-               	robotStrafe = hiveLineUpMovement[0];
-                twist = hiveLineUpMovement[1];
-		robotDrive = 0;
+            robotStrafe = hiveLineUpMovement[0];
+            twist = hiveLineUpMovement[1];
+            robotDrive = 0;
             }
 
         // Map drive vectors to power arrays

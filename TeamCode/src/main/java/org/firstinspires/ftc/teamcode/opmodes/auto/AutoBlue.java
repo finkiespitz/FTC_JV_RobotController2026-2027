@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import static com.pedropathing.ivy.Scheduler.isScheduled;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -15,18 +17,36 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.interpolator.Interpolator;
-import com.pedropathing.utils.Timer; // Plural version verified for your project configuration
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import com.pedropathing.ivy.commands.Commands;
 import org.firstinspires.ftc.teamcode.common.Robot;
 import org.firstinspires.ftc.teamcode.common.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.common.subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.common.subsystems.FlowerIntake;
+import org.firstinspires.ftc.teamcode.common.subsystems.FlyWheel;
+import org.firstinspires.ftc.teamcode.common.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
+import org.firstinspires.ftc.teamcode.common.subsystems.NectarSensor;
+import org.firstinspires.ftc.teamcode.common.subsystems.Transfer;
+import org.firstinspires.ftc.teamcode.common.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 @Autonomous(name = "Auto Blue1", group = "Autonomous")
 public class AutoBlue extends LinearOpMode {
 
     private Follower follower;
-    private Robot robot;
+    public Turret turret;
+    public Intake Intake;
+    public Limelight Limelight;
+    public FlyWheel FlyWheel;
+    public NectarSensor NectarSensor;
+    public FlowerIntake FlowerIntake;
+    public Transfer Transfer;
+    private long shootTime = 400;
+
+
 
     private final boolean redTeam = false;
 
@@ -69,59 +89,55 @@ public class AutoBlue extends LinearOpMode {
     public Path park() {return Paths.curve(parkStart, parkControl1, park).linear(parkStart, park);}
 
 
+
+
     private Command spinUpFlywheel() {return instant(() -> {
-        // Flywheel on
+        FlyWheel.runAuto(Limelight.getPose(redTeam), NectarSensor.run(telemetry));
     });
     }
 
 
     private Command waitForFlywheelReady() {
+        return waitUntil(() -> FlyWheel.isSpunUp());
+    }
+    private Command stopFlyWheel() {
         return instant(() -> {
-            // Wait for flywheel speed
+            FlyWheel.stop();
         });
     }
 
 
-    private Command shootPreloads() {
-        return instant(() -> {
-            // Shoot preload
-        });
+
+    private Command shoot4Balls() {
+        return sequential(
+                instant(() -> Transfer.setPowerDirect(1)),
+                waitMs(shootTime * 4)
+
+        );
     }
 
 
     private Command intakeOn() {
         return instant(() -> {
-            // Intake on
+            Intake.setPowerDirect(0.65);
         });
     }
 
 
     private Command intakeOff() {
         return instant(() -> {
-            // Intake off
+            Intake.stop();
         });
     }
 
-
-    private Command transferRings() {
-        return instant(() -> {
-            // Transfer rings
-        });
-    }
-
-
-    private Command shootSecondVolley() {
-        return instant(() -> {
-            // Shoot second volley
-        });
-    }
 
 
     private Command autoRoutine() {
         return sequential(
                 spinUpFlywheel(),
                 waitForFlywheelReady(),
-                shootPreloads(),
+                shoot4Balls(),
+                stopFlyWheel(),
 
                 parallel(
                         follow(follower, gardenIntake()),
@@ -132,12 +148,13 @@ public class AutoBlue extends LinearOpMode {
 
                 follow(follower, shoot2()),
 
-                parallel(
-                        spinUpFlywheel(),
-                        transferRings()
-                ),
 
-                shootSecondVolley(),
+                spinUpFlywheel(),
+                waitForFlywheelReady(),
+                shoot4Balls(),
+                stopFlyWheel(),
+
+
 
                 follow(follower, park()),
 
@@ -148,13 +165,21 @@ public class AutoBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        this.NectarSensor = new NectarSensor(hardwareMap);
+        this.Limelight = new Limelight(hardwareMap);
+        this.FlyWheel = new FlyWheel(hardwareMap);
+        this.turret = new Turret(hardwareMap);
+        this.Intake = new Intake(hardwareMap);
+        this.FlyWheel = new FlyWheel(hardwareMap);
+        //this.FlowerIntake = new FlowerIntake(hardwareMap);
+        this.Transfer = new Transfer (hardwareMap);
 
         follower = Constants.create(hardwareMap);
 
         follower.setPose(start);
         Scheduler.reset();
 
-        telemetry.addLine("Auto Red Full");
+        telemetry.addLine("Auto Blue Full");
         telemetry.addData("Start X", start.x());
         telemetry.addData("Start Y", start.y());
         telemetry.addData("Start Heading", start.heading());
@@ -174,10 +199,7 @@ public class AutoBlue extends LinearOpMode {
             telemetry.addData("X", follower.pose().x());
             telemetry.addData("Y", follower.pose().y());
 
-            telemetry.addData(
-                    "Heading",
-                    Math.toDegrees(follower.pose().heading())
-            );
+            telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
 
             telemetry.addData("Mode", follower.mode());
             telemetry.addData("Completion", follower.completion());

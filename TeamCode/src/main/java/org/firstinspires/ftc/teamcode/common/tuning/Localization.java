@@ -53,9 +53,9 @@ public class Localization {
         double y = pose.getY(DistanceUnit.INCH);
         double headingDeg = pose.getHeading(AngleUnit.DEGREES);
 
-        telemetry.addData("X Position (in)", x);
-        telemetry.addData("Y Position (in)", y);
-        telemetry.addData("Heading (deg)", headingDeg);
+        telemetry.addData("X Position (in)", "%.2f", x);
+        telemetry.addData("Y Position (in)", "%.2f", y);
+        telemetry.addData("Heading (deg)", "%.2f", headingDeg);
     }
 
     public void correctHeadingWithVision(Limelight limelight, boolean redTeam) {

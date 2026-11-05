@@ -34,9 +34,8 @@ public class Intake {
     // 2. AUTONOMOUS CALLS THIS: Bypasses gamepads entirely
     // Positive power to intake, negative power to reverse/outtake, 0 to stop
     public void setPowerDirect(double power) {
-        intakeMotor.setPower(power);
-
-
-    }
+        intakeMotor.setPower(power);}
+    public void stop() {
+        intakeMotor.setPower(0);}
 }
 
