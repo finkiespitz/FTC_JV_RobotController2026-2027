@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.subsystems;
 
+import android.annotation.SuppressLint;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
@@ -48,6 +50,7 @@ public class DriveTrain {
         return new double[]{strafe, twist};
     }
 
+    @SuppressLint("SuspiciousIndentation")
     public double[] holdPoseValues(double y, double x, double headingDeg){
 	//proportional error/ just base error
 	double headingError = holdHeading - headingDeg;
@@ -57,9 +60,9 @@ public class DriveTrain {
 	// Normalize heading error to always take the shortest path on a 0-359 scale
     	headingError = (headingError + 180) % 360;
     	if (headingError < 0) {
-        headingError += 360;
-   	 }
-    	headingError -= 180;
+            headingError += 360;
+   	    }
+        headingError -= 180;
 	
 	//integral error
 	integralHeadingError = integralHeadingError + headingError;

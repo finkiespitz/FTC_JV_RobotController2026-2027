@@ -56,20 +56,6 @@ public class Localization {
         telemetry.addData("X Position (in)", x);
         telemetry.addData("Y Position (in)", y);
         telemetry.addData("Heading (deg)", headingDeg);
-        telemetry.update();
-
-        TelemetryPacket packet = new TelemetryPacket();
-        packet.put("Robot X", x);
-        packet.put("Robot Y", y);
-        packet.put("Robot Heading (deg)", headingDeg);
-
-        packet.fieldOverlay()
-                .setStroke("blue")
-                .setStrokeWidth(1)
-                .strokeCircle(x, y, 9)
-                .strokeLine(x, y, x + 9 * Math.cos(Math.toRadians(headingDeg)), y + 9 * Math.sin(Math.toRadians(headingDeg)));
-
-        FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 
     public void correctHeadingWithVision(Limelight limelight, boolean redTeam) {

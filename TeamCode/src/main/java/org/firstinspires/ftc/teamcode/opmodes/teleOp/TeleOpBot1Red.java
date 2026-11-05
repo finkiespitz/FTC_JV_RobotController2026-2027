@@ -20,7 +20,7 @@ public class TeleOpBot1Red extends LinearOpMode {
         // Instantiate the object-oriented master class
         Robot robot = new Robot(hardwareMap, telemetry, redTeam);
 
-        telemetry.addData("Status", "Initialized Clean Robot Hub!");
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         waitForStart();
