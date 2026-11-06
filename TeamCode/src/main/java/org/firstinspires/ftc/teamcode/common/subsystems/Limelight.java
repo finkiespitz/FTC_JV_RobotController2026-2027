@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode.common.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import java.util.List;
 
 public class Limelight {
@@ -43,16 +41,13 @@ public class Limelight {
     }
 
     public double getPose(boolean redTeam) {
-        LLResult result = limelight.getLatestResult();	
+        LLResult result = limelight.getLatestResult();
         String validity = teamFilter(redTeam);
-	
-        if (validity.equals("valid") || result == null) {
-            List<LLResultTypes.FiducialResult> AprilTags = null;
-            if (result != null) {
-                AprilTags = result.getFiducialResults();
-            }
+
+        if (validity.equals("valid") && result != null) {
+            List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
             if (AprilTags == null || AprilTags.isEmpty()) return 1000;
-            
+
             LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
             Pose3D cameraPose = targetTag.getRobotPoseTargetSpace();
             if (cameraPose != null) {
@@ -60,20 +55,18 @@ public class Limelight {
                 double y = cameraPose.getPosition().y;
                 double z = cameraPose.getPosition().z;
 
-                return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));}
-	}
-       	return 1000;
+                return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+            }
+        }
+        return 1000;
     }
 
     public double getTx(boolean redTeam) {
         LLResult result = limelight.getLatestResult();
         String validity = teamFilter(redTeam);
 
-        if (validity.equals("valid") || result == null) {
-            if (result != null) {
-                return result.getTx();
-            }
-
+        if (validity.equals("valid") && result != null) {
+            return result.getTx();
         }
         return 0;
     }
@@ -82,10 +75,8 @@ public class Limelight {
         LLResult result = limelight.getLatestResult();
         String validity = teamFilter(redTeam);
 
-        if (validity.equals("valid") || result == null) {
-            if (result != null) {
-                return result.getTy();
-            }
+        if (validity.equals("valid") && result != null) {
+            return result.getTy();
         }
         return 0;
     }
@@ -94,10 +85,8 @@ public class Limelight {
         LLResult result = limelight.getLatestResult();
         String validity = teamFilter(redTeam);
 
-        if (validity.equals("valid") || result == null) {
-            if (result != null) {
-                return result.getTa();
-            }
+        if (validity.equals("valid") && result != null) {
+            return result.getTa();
         }
         return 0;
     }
@@ -106,8 +95,8 @@ public class Limelight {
         LLResult result = limelight.getLatestResult();
         String validity = teamFilter(redTeam);
 
-        if (validity.equals("valid")) {
-           return result.getBotpose().getOrientation().getYaw(AngleUnit.DEGREES);
+        if (validity.equals("valid") && result != null && result.getBotpose() != null) {
+            return result.getBotpose().getOrientation().getYaw(AngleUnit.DEGREES);
         }
         return 0;
     }

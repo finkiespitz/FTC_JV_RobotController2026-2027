@@ -28,16 +28,18 @@ public class Turret {
         }
     }
 
-    public void updateTracking(double currentX, double currentY) {
+    public void updateTracking(double currentX, double currentY, double headingDeg) {
         double deltaX = targetX - currentX;
         double deltaY = targetY - currentY;
-        double fieldAngle = Math.toDegrees(Math.atan2(deltaY, deltaX));
-        
-        if (fieldAngle < 0) {
-            fieldAngle += 360;
-        }
 
-        double rawTurretAngle = 90.0 - fieldAngle;
+
+        double absoluteFieldAngle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+        double localTargetAngle = absoluteFieldAngle - headingDeg;
+
+
+        double rawTurretAngle = 90.0 - localTargetAngle;
+
 
         rawTurretAngle = (rawTurretAngle + 180) % 360;
         if (rawTurretAngle < 0) {
@@ -45,14 +47,17 @@ public class Turret {
         }
         rawTurretAngle -= 180;
 
+
         if (rawTurretAngle < 0.0) {
             turretAngle = 0.0;
-        } else turretAngle = Math.min(rawTurretAngle, 180.0);
+        } else {
+            turretAngle = Math.min(rawTurretAngle, 180.0);
+        }
     }
 
-    public void run(double currentX, double currentY, boolean redTeam, Telemetry telemetry) {
+    public void run(double currentX, double currentY, double currentHeadingDeg, boolean redTeam, Telemetry telemetry) {
         calculateHiveTarget(currentY, redTeam);
-        updateTracking(currentX, currentY);
+        updateTracking(currentX, currentY, currentHeadingDeg);
 
         double servoPose = turretAngle / 180.0;
         turretServo.setPosition(servoPose);

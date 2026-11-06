@@ -36,7 +36,7 @@ public class TeleOpBot1Red extends LinearOpMode {
              robot.driveTrain.run(gamepad1, robot.Localization.getHeadingRad(), robot.Limelight.getTx(redTeam), robot.Limelight.getTargetYaw(redTeam), robot.Localization.getY(), robot.Localization.getX(),
                      telemetry);
 
-             robot.turret.run(gamepad2, robot.Localization.getX(), robot.Localization.getY(), redTeam,
+             robot.Turret.run(robot.Localization.getX(), robot.Localization.getY(), Math.toDegrees(robot.Localization.getHeadingRad()), redTeam,
                      telemetry);
 
              //  Run Intake Subsystem

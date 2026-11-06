@@ -17,7 +17,7 @@ public class NectarSensor {
 
     public boolean run(Telemetry telemetry) {
         // Read raw channel values
-      /*  int red = colorSensor.red();
+      /**  int red = colorSensor.red();
         int blue = colorSensor.blue();
         int green = colorSensor.green();
 
@@ -58,7 +58,7 @@ public class NectarSensor {
         // Extremely useful live dashboard tuning tool for tournament field calibrations
         telemetry.addData("Live Sensor Hue", "%.1f deg", hue);
 
-        return nectarDetected;*/
+        return nectarDetected; **/
         return false;
     }
 }
