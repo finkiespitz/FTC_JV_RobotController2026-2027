@@ -37,7 +37,7 @@ import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 public class AutoBlue extends LinearOpMode {
 
     private Follower follower;
-    public Turret turret;
+    public Turret Turret;
     public Intake Intake;
     public Limelight Limelight;
     public FlyWheel FlyWheel;
@@ -168,7 +168,7 @@ public class AutoBlue extends LinearOpMode {
         this.NectarSensor = new NectarSensor(hardwareMap);
         this.Limelight = new Limelight(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
-        this.turret = new Turret(hardwareMap);
+        this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
         //this.FlowerIntake = new FlowerIntake(hardwareMap);
@@ -188,6 +188,8 @@ public class AutoBlue extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
+
+        Turret.run(follower.pose().y(), follower.pose().x(), redTeam, telemetry);
 
         schedule(autoRoutine());
 

@@ -37,7 +37,7 @@ import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 public class AutoRed extends LinearOpMode {
 
     private Follower follower;
-    public Turret turret;
+    public Turret Turret;
     public Intake Intake;
     public Limelight Limelight;
     public FlyWheel FlyWheel;
@@ -146,19 +146,20 @@ public class AutoRed extends LinearOpMode {
 
                 intakeOff(),
 
-                follow(follower, shoot2()),
+                parallel(
+                        follow(follower, shoot2()),
+                        spinUpFlywheel()
 
+                ),
 
-                spinUpFlywheel(),
                 waitForFlywheelReady(),
                 shoot4Balls(),
-                stopFlyWheel(),
 
+                parallel(
+                        stopFlyWheel(),
+                        follow(follower, park())
+                )
 
-
-                follow(follower, park()),
-
-                intakeOff()
         );
     }
 
@@ -168,7 +169,7 @@ public class AutoRed extends LinearOpMode {
         this.NectarSensor = new NectarSensor(hardwareMap);
         this.Limelight = new Limelight(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
-        this.turret = new Turret(hardwareMap);
+        this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
         //this.FlowerIntake = new FlowerIntake(hardwareMap);
@@ -188,6 +189,8 @@ public class AutoRed extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
+
+        Turret.run(follower.pose().y(), follower.pose().x(), redTeam, telemetry);
 
         schedule(autoRoutine());
 

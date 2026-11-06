@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Robot {
     // Subsystem objects
     public DriveTrain driveTrain;
-    public Turret turret;
+    public Turret Turret;
     public Intake Intake;
     public Limelight Limelight;
     public FlyWheel FlyWheel;
@@ -33,7 +33,7 @@ public class Robot {
 	    this.Limelight = new Limelight(hardwareMap);
         this.Localization = new Localization(hardwareMap, telemetry, redTeam);
         this.driveTrain = new DriveTrain(Localization, hardwareMap);
-        this.turret = new Turret(hardwareMap);
+        this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
         this.NectarSensor = new NectarSensor(hardwareMap);

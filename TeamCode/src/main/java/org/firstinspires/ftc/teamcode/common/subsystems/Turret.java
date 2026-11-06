@@ -16,7 +16,7 @@ public class Turret {
         turretServo.setPosition(0.0);
     }
 
-    public void calculateHiveTarget(double currentX, double currentY, boolean redTeam) {
+    public void calculateHiveTarget(double currentY, boolean redTeam) {
         boolean isAudienceSide = currentY < 70.75;
 
         if (redTeam) {
@@ -50,8 +50,8 @@ public class Turret {
         } else turretAngle = Math.min(rawTurretAngle, 180.0);
     }
 
-    public void run(Gamepad gamepad2, double currentX, double currentY, boolean redTeam, Telemetry telemetry) {
-        calculateHiveTarget(currentX, currentY, redTeam);
+    public void run(double currentX, double currentY, boolean redTeam, Telemetry telemetry) {
+        calculateHiveTarget(currentY, redTeam);
         updateTracking(currentX, currentY);
 
         double servoPose = turretAngle / 180.0;
