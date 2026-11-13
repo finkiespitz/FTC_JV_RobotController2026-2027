@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.common.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.common.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.common.subsystems.FlyWheel;
-import org.firstinspires.ftc.teamcode.common.subsystems.NectarSensor;
 import org.firstinspires.ftc.teamcode.common.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.common.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.common.tuning.Localization;
@@ -22,7 +21,6 @@ public class Robot {
     public Intake Intake;
     public Limelight Limelight;
     public FlyWheel FlyWheel;
-    public NectarSensor NectarSensor;
     public FlowerIntake FlowerIntake;
     public Localization Localization;
     public Transfer Transfer;
@@ -33,10 +31,9 @@ public class Robot {
 	    this.Limelight = new Limelight(hardwareMap);
         this.Localization = new Localization(hardwareMap, telemetry, redTeam);
         this.driveTrain = new DriveTrain(Localization, hardwareMap);
-        this.Turret = new Turret(hardwareMap);
+        //this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
-        this.NectarSensor = new NectarSensor(hardwareMap);
         //this.FlowerIntake = new FlowerIntake(hardwareMap);
         this.Transfer = new Transfer (hardwareMap);
     }

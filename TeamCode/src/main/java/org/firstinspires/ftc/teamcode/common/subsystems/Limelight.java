@@ -100,4 +100,31 @@ public class Limelight {
         }
         return 0;
     }
+
+
+    public double[] getTargetPosition(boolean redTeam) {
+
+        LLResult result = limelight.getLatestResult();
+
+        if (result == null || !result.isValid()) return null;
+
+        List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
+
+        if (tags == null || tags.isEmpty()) return null;
+
+        LLResultTypes.FiducialResult tag = tags.get(0);
+        int tagId = tag.getFiducialId();
+
+        if (redTeam && (tagId < 30 || tagId > 37)) return null;
+        if (!redTeam && (tagId < 38 || tagId > 45)) return null;
+
+        Pose3D pose = tag.getRobotPoseTargetSpace();
+
+        if (pose == null) return null;
+
+        return new double[]{
+                pose.getPosition().x,
+                pose.getOrientation().getYaw(AngleUnit.DEGREES)
+        };
+    }
 }

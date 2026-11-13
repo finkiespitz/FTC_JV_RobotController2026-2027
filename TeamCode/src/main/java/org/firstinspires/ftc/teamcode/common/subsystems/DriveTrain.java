@@ -43,14 +43,15 @@ public class DriveTrain {
         return new double[]{strafe, twist};
     }
 
+
     public double[] holdPoseValues(double y, double x, double headingDeg) {
+
         double xError = this.holdX - x;
         double yError = this.holdY - y;
 
         double headingErrorDeg = holdHeadingDeg - headingDeg;
-        headingErrorDeg = (headingErrorDeg + 180) % 360;
-        if (headingErrorDeg < 0) headingErrorDeg += 360;
-        headingErrorDeg -= 180;
+        headingErrorDeg = ((headingErrorDeg + 180) % 360 + 360) % 360 - 180;
+
         double headingErrorRad = Math.toRadians(headingErrorDeg);
         double currentHeadingRad = Math.toRadians(headingDeg);
 
@@ -59,27 +60,31 @@ public class DriveTrain {
             this.prevY = y;
             this.prevHeadingRad = currentHeadingRad;
             this.isFirstRun = false;
+            return new double[]{0, 0, 0};
+        }
+
+        if (this.dt < 0.001) {
+            return new double[]{0, 0, 0};
         }
 
         double xVelocity = (x - this.prevX) / this.dt;
         double yVelocity = (y - this.prevY) / this.dt;
+
         double deltaHeading = currentHeadingRad - this.prevHeadingRad;
-        double headingVelocity = Math.atan2(Math.sin(deltaHeading), Math.cos(deltaHeading)) / this.dt;
+        double headingVelocity = Math.atan2(
+                Math.sin(deltaHeading), Math.cos(deltaHeading)) / this.dt;
 
         this.prevX = x;
         this.prevY = y;
         this.prevHeadingRad = currentHeadingRad;
 
-        if (Math.signum(xError) == Math.signum(-xVelocity)) xVelocity = 0.0;
-        if (Math.signum(yError) == Math.signum(-yVelocity)) yVelocity = 0.0;
-        if (Math.signum(headingErrorRad) == Math.signum(-headingVelocity)) headingVelocity = 0.0;
+        double drive = -(xError * 94.86832981) - (xVelocity * 17.36981056);
 
+        double strafe = -(yError * 100.00000000) - (yVelocity * 17.37247347);
 
-        double drive  = (xError * 94.87)  + (xVelocity * 49.82) + (headingErrorRad * -1.50);
-        double strafe = (yError * 100.00) + (yVelocity * 50.99) + (headingErrorRad * -1.75);
-        double twist  = (headingErrorRad * 180.28) + (headingVelocity * 33.83);
+        double twist = -(headingErrorRad * 180.27756377) - (headingVelocity * 31.80128451);
 
-        return new double[]{ strafe, twist, drive };
+        return new double[]{strafe, twist, drive};
     }
 
 
@@ -134,22 +139,24 @@ public class DriveTrain {
 		    holdHeadingDeg = headingDeg;
 		    holdX = x;
             holdY = y;
+            isFirstRun = true;
+            holdPose = !holdPose;
 
-            holdPose = true;
            }
 
             prevRightTrigger = gamepad1.right_trigger_pressed;
 
-
+            //holdPose
             if(holdPose && !gamepad1.x) {
-                isFirstRun = true;
                 double[] holdPoseValues = holdPoseValues(y, x, headingDeg);
 
                 robotStrafe = holdPoseValues[0];
                 twist = holdPoseValues[1];
                 robotDrive = holdPoseValues[2];
+
             }
 
+            //hive lineup
         if (gamepad1.x) {
             double[] hiveLineUpMovement =  hiveLineUpValues(tx, targetYaw);
 
@@ -183,14 +190,6 @@ public class DriveTrain {
         backLeft.setPower(speeds[2] * speedMultiplier);
         backRight.setPower(speeds[3] * speedMultiplier);
 
-        //reset heading controls
-
-        if (gamepad1.left_bumper && gamepad1.right_bumper && !prevLeftAndRightBumper) {
-            localization.resetHeading();
-        }
-
-
-        prevLeftAndRightBumper = gamepad1.left_bumper && gamepad1.right_bumper;
         
     }
 }

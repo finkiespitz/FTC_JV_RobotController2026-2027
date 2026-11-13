@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static com.pedropathing.ivy.Scheduler.isScheduled;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
@@ -20,20 +19,15 @@ import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import com.pedropathing.ivy.commands.Commands;
-import org.firstinspires.ftc.teamcode.common.Robot;
 import org.firstinspires.ftc.teamcode.common.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.common.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.common.subsystems.FlowerIntake;
 import org.firstinspires.ftc.teamcode.common.subsystems.FlyWheel;
 import org.firstinspires.ftc.teamcode.common.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
-import org.firstinspires.ftc.teamcode.common.subsystems.NectarSensor;
 import org.firstinspires.ftc.teamcode.common.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.common.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
-@Autonomous(name = "Auto Blue1", group = "Autonomous")
+@Autonomous(name = "Auto Red1", group = "Autonomous")
 public class AutoRed extends LinearOpMode {
 
     private Follower follower;
@@ -41,7 +35,6 @@ public class AutoRed extends LinearOpMode {
     public Intake Intake;
     public Limelight Limelight;
     public FlyWheel FlyWheel;
-    public NectarSensor NectarSensor;
     public FlowerIntake FlowerIntake;
     public Transfer Transfer;
     private long shootTime = 400;
@@ -92,7 +85,7 @@ public class AutoRed extends LinearOpMode {
 
 
     private Command spinUpFlywheel() {return instant(() -> {
-        FlyWheel.runAuto(Limelight.getPose(redTeam), NectarSensor.run(telemetry));
+        FlyWheel.runAuto(Limelight.getPose(redTeam));
     });
     }
 
@@ -166,7 +159,6 @@ public class AutoRed extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        this.NectarSensor = new NectarSensor(hardwareMap);
         this.Limelight = new Limelight(hardwareMap);
         this.FlyWheel = new FlyWheel(hardwareMap);
         this.Turret = new Turret(hardwareMap);
@@ -190,7 +182,7 @@ public class AutoRed extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Turret.run(follower.pose().y(), follower.pose().x(), redTeam, telemetry);
+        Turret.run(follower.pose().y(), follower.pose().x(), follower.pose().heading(), redTeam, telemetry);
 
         schedule(autoRoutine());
 

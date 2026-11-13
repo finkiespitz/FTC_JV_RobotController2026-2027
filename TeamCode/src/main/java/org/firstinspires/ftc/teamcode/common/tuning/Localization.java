@@ -18,8 +18,20 @@ import java.util.List;
 
 @Config
 public class Localization {
+
     private final GoBildaPinpointDriver pinpoint;
     private final Telemetry telemetry;
+    private double x = 0.0;
+    private double y = 0.0;
+    private final double RED_HIVE_AUDIENCE_SIDE_X = 57.7;
+    private final double RED_HIVE_AUDIENCE_SIDE_Y = 86.5;
+    private final double RED_HIVE_BACK_SIDE_X = 57.7;
+    private final double RED_HIVE_BACK_SIDE_Y = 55.0;
+    private final double BLUE_HIVE_AUDIENCE_SIDE_Y = 86.7;
+    private final double BLUE_HIVE_AUDIENCE_SIDE_X = 83.8;
+    private final double BLUE_HIVE_BACK_SIDE_Y = 55.0;
+    private final double BLUE_HIVE_BACK_SIDE_X = 83.8;
+    private boolean isAudienceSide;
 
     public Localization(HardwareMap hardwareMap, Telemetry telemetry, boolean redTeam) {
         this.telemetry = telemetry;
@@ -49,51 +61,98 @@ public class Localization {
         pinpoint.update();
 
         Pose2D pose = pinpoint.getPosition();
-        double x = pose.getX(DistanceUnit.INCH);
-        double y = pose.getY(DistanceUnit.INCH);
+        x = pose.getX(DistanceUnit.INCH);
+        y = pose.getY(DistanceUnit.INCH);
         double headingDeg = pose.getHeading(AngleUnit.DEGREES);
 
-        telemetry.addData("X Position (in)", "%.2f", x);
-        telemetry.addData("Y Position (in)", "%.2f", y);
-        telemetry.addData("Heading (deg)", "%.2f", headingDeg);
+        telemetry.addData("X Position (in)", x);
+        telemetry.addData("Y Position (in)", y);
+        telemetry.addData("Heading (deg)", headingDeg);
     }
 
     public void correctHeadingWithVision(Limelight limelight, boolean redTeam) {
 
-       LLResult result = limelight.limelight.getLatestResult();
-       if (result != null && result.getBotpose() != null) {
-           List<LLResultTypes.FiducialResult> AprilTags = result.getFiducialResults();
+        LLResult result = limelight.limelight.getLatestResult();
 
-           LLResultTypes.FiducialResult targetTag = AprilTags.get(0);
-           int tagId = targetTag.getFiducialId();
+        if (result == null || !result.isValid()) {
+            return;
+        }
 
-           double visionHeadingRad;
-           if(tagId > 33 && tagId < 42){
-               visionHeadingRad = result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS) + 90;
+        if (result.getBotpose() == null) {
+            return;
+        }
 
-               pinpoint.setHeading(visionHeadingRad, AngleUnit.RADIANS);
-           }
-           else {
-               visionHeadingRad = result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS) - 90;
+        List<LLResultTypes.FiducialResult> aprilTags =
+                result.getFiducialResults();
 
-               pinpoint.setHeading(visionHeadingRad, AngleUnit.RADIANS);
-           }
-       }
+        // Make sure at least one AprilTag was detected
+        if (aprilTags == null || aprilTags.isEmpty()) {
+            return;
+        }
+
+        LLResultTypes.FiducialResult targetTag = aprilTags.get(0);
+
+        int tagId = targetTag.getFiducialId();
+
+        double visionHeadingRad;
+
+        if (tagId > 33 && tagId < 42) {
+            visionHeadingRad =
+                    result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS)
+                            + Math.toRadians(90);
+        } else {
+            visionHeadingRad =
+                    result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS)
+                            - Math.toRadians(90);
+        }
+
+        pinpoint.setHeading(visionHeadingRad, AngleUnit.RADIANS);
     }
 
-    public double getX() { 
-        return pinpoint.getPosition().getX(DistanceUnit.INCH); 
+    public double getX() {
+        return pinpoint.getPosition().getX(DistanceUnit.INCH);
     }
-    
-    public double getY() { 
-        return pinpoint.getPosition().getY(DistanceUnit.INCH); 
+
+    public double getY() {
+        return pinpoint.getPosition().getY(DistanceUnit.INCH);
     }
-    
-    public double getHeadingRad() { 
-        return pinpoint.getPosition().getHeading(AngleUnit.RADIANS); 
+
+    public double getHeadingRad() {
+        return pinpoint.getPosition().getHeading(AngleUnit.RADIANS);
     }
-    
+
     public void resetHeading() {
         pinpoint.recalibrateIMU();
     }
+
+    public double[] getHiveTarget(boolean redTeam) {
+        isAudienceSide = y < 70.75;
+
+        if (redTeam) {
+            double targetX = isAudienceSide ? RED_HIVE_AUDIENCE_SIDE_X : RED_HIVE_BACK_SIDE_X;
+            double targetY = isAudienceSide ? RED_HIVE_AUDIENCE_SIDE_Y : RED_HIVE_BACK_SIDE_Y;
+            return new double[]{targetX, targetY};
+        } else {
+            double targetX = isAudienceSide ? BLUE_HIVE_AUDIENCE_SIDE_X : BLUE_HIVE_BACK_SIDE_X;
+            double targetY = isAudienceSide ? BLUE_HIVE_AUDIENCE_SIDE_Y : BLUE_HIVE_BACK_SIDE_Y;
+            return new double[]{targetX, targetY};
+        }
+    }
+    public double getDeltaXToHive(boolean redTeam){
+        double[] hiveXY = getHiveTarget(redTeam);
+        return hiveXY[0] - x;
+    }
+    public double getDeltaYToHive(boolean redTeam){
+        double[] hiveXY = getHiveTarget(redTeam);
+        return hiveXY[1] - y;
+    }
+    public double getRobotHeadingOffsetToHive (boolean redTeam){
+        //θ 1
+        return Math.toDegrees(Math.atan2(getDeltaXToHive(redTeam), getDeltaYToHive(redTeam)));
+    }
+    public double getRobotDeltaYToHive(boolean redTeam){
+        double[] hiveXY = getHiveTarget(redTeam);
+        return hiveXY[1] - y;
+    }
 }
+
