@@ -16,15 +16,15 @@ public class Intake {
     }
 
     // 1. TELEOP CALLS THIS: Utilizes Gamepads
-    public void run(Gamepad gamepad2,
+    public void run(Gamepad gamepad1,
                     Telemetry telemetry) {
         double intakePower = 0;
 
-        if (gamepad2.right_trigger_pressed) {
+        if (gamepad1.right_trigger_pressed) {
             intakePower = 0.65;
         }
 
-        if (gamepad2.left_trigger_pressed) {
+        if (gamepad1.left_trigger_pressed) {
             intakePower = -0.65;
         }
 

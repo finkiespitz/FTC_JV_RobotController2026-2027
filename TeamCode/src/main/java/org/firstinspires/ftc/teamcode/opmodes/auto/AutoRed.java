@@ -26,10 +26,11 @@ import org.firstinspires.ftc.teamcode.common.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.common.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.common.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 @Autonomous(name = "Auto Red1", group = "Autonomous")
 public class AutoRed extends LinearOpMode {
-
+    private Localization Localization;
     private Follower follower;
     public Turret Turret;
     public Intake Intake;
@@ -52,12 +53,12 @@ public class AutoRed extends LinearOpMode {
     private final Pose shoot2Control1 = poseFactory.of(33.6528, 47.5302, 0);
     private final Pose shoot2Control2 = poseFactory.of(1.4226, 126.9303, 0);
     private final Pose shoot2Control3 = poseFactory.of(60.0322, 106.5034, 0);
-    private final Pose shoot2Segment1Heading = poseFactory.of(60, 133, -90);
-    private final Pose shoot2Segment2Start = poseFactory.of(60, 133, -90);
+    private final Pose shoot2Segment1Heading = poseFactory.of(60, 133, 270);
+    private final Pose shoot2Segment2Start = poseFactory.of(60, 133, 270);
     private final Pose shoot2Segment2End = poseFactory.of(60, 133, 0);
     private final Pose shoot2Segment3Start = poseFactory.of(60, 133, 0);
-    private final Pose shoot2Segment3End = poseFactory.of(60, 133, -90);
-    private final Pose parkStart = poseFactory.of(60, 133, -90);
+    private final Pose shoot2Segment3End = poseFactory.of(60, 133, 270);
+    private final Pose parkStart = poseFactory.of(60, 133, 270);
     private final Pose park = poseFactory.of(15.7594, 119.9135, 0);
     private final Pose parkControl1 = poseFactory.of(62.6887, 104.738, 0);
 
@@ -85,7 +86,7 @@ public class AutoRed extends LinearOpMode {
 
 
     private Command spinUpFlywheel() {return instant(() -> {
-        FlyWheel.runAuto(Limelight.getPose(redTeam));
+        FlyWheel.runAuto(1060);
     });
     }
 
@@ -103,16 +104,24 @@ public class AutoRed extends LinearOpMode {
 
     private Command shoot4Balls() {
         return sequential(
-                instant(() -> Transfer.setPowerDirect(1)),
-                waitMs(shootTime * 4)
+                parallel(
+                        instant(() -> Transfer.setPowerDirect(1)),
+                        intakeOn()
+                ),
 
+                waitMs(shootTime * 4),
+
+                instant(() -> {
+                    Transfer.setPowerDirect(0);
+                    Intake.stop();
+                })
         );
     }
 
 
     private Command intakeOn() {
         return instant(() -> {
-            Intake.setPowerDirect(0.65);
+            Intake.setPowerDirect(1);
         });
     }
 
@@ -139,20 +148,19 @@ public class AutoRed extends LinearOpMode {
 
                 intakeOff(),
 
-                parallel(
-                        follow(follower, shoot2()),
-                        spinUpFlywheel()
+                follow(follower, shoot2()),
 
-                ),
 
+                spinUpFlywheel(),
                 waitForFlywheelReady(),
                 shoot4Balls(),
+                stopFlyWheel(),
 
-                parallel(
-                        stopFlyWheel(),
-                        follow(follower, park())
-                )
 
+
+                follow(follower, park()),
+
+                intakeOff()
         );
     }
 
@@ -163,7 +171,6 @@ public class AutoRed extends LinearOpMode {
         this.FlyWheel = new FlyWheel(hardwareMap);
         this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);
-        this.FlyWheel = new FlyWheel(hardwareMap);
         //this.FlowerIntake = new FlowerIntake(hardwareMap);
         this.Transfer = new Transfer (hardwareMap);
 
@@ -182,7 +189,7 @@ public class AutoRed extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Turret.run(follower.pose().y(), follower.pose().x(), follower.pose().heading(), redTeam, telemetry);
+        //Turret.run(Localization.getRobotHeadingOffsetToHive(redTeam, follower.pose().x(), follower.pose().y()), Math.toDegrees(follower.pose().heading()));
 
         schedule(autoRoutine());
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.Robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,9 +13,10 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @Config
 public class FlyWheel {
+    private double tuningVelocity = 1060;
     public static double pollenFactor = 2;
-    private static double kp = 0.0;
-    private static double kf = 0.0;
+    private static double kp = 40;
+    private static double kf = 15;
     private static int stepIndex = 0;
     private final double[] stepSizes = {0.01, 0.1, 1, 10};
     private final DcMotorEx flyWheel;
@@ -27,14 +29,14 @@ public class FlyWheel {
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(kp, 0, 0, kf);
         flyWheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        flyWheel.setDirection(DcMotor.Direction.REVERSE);
+        flyWheel.setDirection(DcMotor.Direction.FORWARD);
 
 
     }
 
     //Use the Gamepads
     public void run(Gamepad gamepad1, Gamepad gamepad2,
-                    double distanceFromHive, Telemetry telemetry) {
+                    double distanceFromHive, Robot robot, Telemetry telemetry) {
 
         if(gamepad2.bWasPressed() && stepIndex < 3){
             stepIndex = stepIndex + 1;}
@@ -54,14 +56,30 @@ public class FlyWheel {
         if (gamepad2.dpadDownWasPressed()) {
             kf -= stepSizes[stepIndex];}
 
+        if (gamepad2.dpadRightWasPressed()) {
+            tuningVelocity +=stepSizes[stepIndex];}
+
+        if (gamepad2.dpadLeftWasPressed()) {
+            tuningVelocity -= stepSizes[stepIndex];}
+
 
         if (gamepad2.touchpadWasPressed()) {
             flyWheelOn = !flyWheelOn;}
 
         if(flyWheelOn){
-         flyWheelVelocity = distanceFromHive * pollenFactor;;
+         flyWheelVelocity = tuningVelocity;
         }
         else flyWheelVelocity = 0;
+
+
+        //auto transfer start for testing
+        /**if(isSpunUp() && flyWheelVelocity > 10 && !gamepad2.right_trigger_pressed && !gamepad2.left_trigger_pressed){
+            robot.Transfer.setPowerDirect(1);
+        } else if (!gamepad2.right_trigger_pressed && !gamepad2.left_trigger_pressed) {robot.Transfer.setPowerDirect(0);
+        }**/
+
+
+
 
 
 
@@ -81,25 +99,22 @@ public class FlyWheel {
         telemetry.addData("kf", kf);
         telemetry.addData("stepSizes", stepSizes[stepIndex]);
         telemetry.addData("FlyWheel Velocity", flyWheel.getVelocity());
-        telemetry.addData("flyWheel Target Velocity", flyWheelVelocity);
+        telemetry.addData("flyWheel Target Velocity", tuningVelocity);
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(kp, 0, 0, kf);
         flyWheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
     }
 
     // Bypasses gamepad
-    public void runAuto(double distanceFromHive) {
-        double flyWheelVelocity = distanceFromHive * pollenFactor;
-
-        flyWheel.setPower(flyWheelVelocity);
-
+    public void runAuto(double velocity) {
+        flyWheel.setVelocity(velocity);
     }
     public void stop() {
         flyWheel.setPower(0);
     }
 
     public Boolean isSpunUp(){
-        return flyWheel.getVelocity() > flyWheelVelocity - 10 && flyWheelVelocity < flyWheel.getVelocity() + 10;
+        return flyWheel.getVelocity() > flyWheelVelocity - 50 && flyWheelVelocity < flyWheel.getVelocity() + 300;
     }
 
 }

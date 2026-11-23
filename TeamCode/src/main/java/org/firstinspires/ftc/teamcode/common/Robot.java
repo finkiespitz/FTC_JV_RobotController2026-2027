@@ -29,7 +29,7 @@ public class Robot {
     // Constructor initializes all your subsystems at once
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean redTeam) {
 	    this.Limelight = new Limelight(hardwareMap);
-        this.Localization = new Localization(hardwareMap, telemetry, redTeam);
+        this.Localization = new Localization(hardwareMap, telemetry, redTeam, Limelight);
         this.driveTrain = new DriveTrain(Localization, hardwareMap);
         //this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);

@@ -18,7 +18,8 @@ import java.util.List;
 
 @Config
 public class Localization {
-
+    private Limelight localLimelight;
+    private final boolean redTeam;
     private final GoBildaPinpointDriver pinpoint;
     private final Telemetry telemetry;
     private double x = 0.0;
@@ -33,9 +34,10 @@ public class Localization {
     private final double BLUE_HIVE_BACK_SIDE_X = 83.8;
     private boolean isAudienceSide;
 
-    public Localization(HardwareMap hardwareMap, Telemetry telemetry, boolean redTeam) {
+    public Localization(HardwareMap hardwareMap, Telemetry telemetry, boolean teleOpRedTeam, Limelight Limelight) {
+        localLimelight = Limelight;
         this.telemetry = telemetry;
-
+        redTeam = teleOpRedTeam;
         double startX;
         double startY;
         double startHeading = 0.0;
@@ -59,6 +61,7 @@ public class Localization {
 
     public void update() {
         pinpoint.update();
+        correctHeadingWithVision(localLimelight, redTeam);
 
         Pose2D pose = pinpoint.getPosition();
         x = pose.getX(DistanceUnit.INCH);
@@ -125,8 +128,8 @@ public class Localization {
         pinpoint.recalibrateIMU();
     }
 
-    public double[] getHiveTarget(boolean redTeam) {
-        isAudienceSide = y < 70.75;
+    public double[] getHiveTarget(boolean redTeam, double localY) {
+        isAudienceSide = localY < 70.75;
 
         if (redTeam) {
             double targetX = isAudienceSide ? RED_HIVE_AUDIENCE_SIDE_X : RED_HIVE_BACK_SIDE_X;
@@ -138,21 +141,21 @@ public class Localization {
             return new double[]{targetX, targetY};
         }
     }
-    public double getDeltaXToHive(boolean redTeam){
-        double[] hiveXY = getHiveTarget(redTeam);
-        return hiveXY[0] - x;
+    public double getDeltaXToHive(boolean redTeam, double localX, double localY){
+        double[] hiveXY = getHiveTarget(redTeam, localY);
+        return hiveXY[0] - localX;
     }
-    public double getDeltaYToHive(boolean redTeam){
-        double[] hiveXY = getHiveTarget(redTeam);
-        return hiveXY[1] - y;
+    public double getDeltaYToHive(boolean redTeam, double localY){
+        double[] hiveXY = getHiveTarget(redTeam, localY);
+        return hiveXY[1] - localY;
     }
-    public double getRobotHeadingOffsetToHive (boolean redTeam){
+    public double getRobotHeadingOffsetToHive (boolean redTeam, double localX, double localY){
         //θ 1
-        return Math.toDegrees(Math.atan2(getDeltaXToHive(redTeam), getDeltaYToHive(redTeam)));
+        return Math.toDegrees(Math.atan2(getDeltaXToHive(redTeam, localX, localY), getDeltaYToHive(redTeam, localY)));
     }
-    public double getRobotDeltaYToHive(boolean redTeam){
-        double[] hiveXY = getHiveTarget(redTeam);
-        return hiveXY[1] - y;
+    public double getDistanceToHive(boolean redTeam, double localX, double localY) {
+        return Math.hypot(getDeltaXToHive(redTeam, localX, localY), getDeltaYToHive(redTeam, localY));
     }
+
 }
 

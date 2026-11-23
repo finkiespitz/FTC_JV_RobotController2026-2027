@@ -14,75 +14,81 @@ public class DriveTrain {
 
     private final Localization localization;
     private final DcMotor frontLeft, frontRight, backLeft, backRight;
-    private final ElapsedTime dtTimer = new ElapsedTime();
 
-    private boolean slowMode = false;
     private boolean holdPose = false;
-    private boolean prevLeftStickButton = false;
-    private boolean prevRightTrigger = false;
-    private boolean prevLeftAndRightBumper = false;
-    private boolean isFirstRun = true;
+    private double holdY = 0.0;
+    private double holdX = 0.0;
+    private double holdHeadingDeg = 0.0;
+    private double prevXError = 0;
+    private double prevYError = 0;
+    private double prevHeadingError = 0;
+    private double driveIntegral = 0;
+    private double strafeIntegral = 0;
+    private double twistIntegral = 0;
+
+    private final ElapsedTime pidTimer = new ElapsedTime();
     private double dt = 0.01;
 
-    private double holdHeadingDeg = 0.0;
-    private double holdX = 0.0;
-    private double holdY = 0.0;
-    private double prevHeadingRad = 0.0;
-    private double prevY = 0.0;
-    private double prevX = 0.0;
+    public static double kpDrive = 0;
+    public static double kiDrive = 0;
+    public static double kdDrive = 0;
 
-    public static double kpTwist = 0.0;
-    public static double kpStrafe = 0.0;
+    public static double kpStrafe = 0;
+    public static double kiStrafe = 0;
+    public static double kdStrafe = 0;
+
+    public static double kpTwist = 0;
+    public static double kiTwist = 0;
+    public static double kdTwist = 0;
 
 
-    public double[] hiveLineUpValues(double tx, double targetYaw) {
 
-        double strafe = tx * kpStrafe;
-        double twist = targetYaw * kpTwist;
 
-        return new double[]{strafe, twist};
+    public double[] hiveLineUpValues(double hiveTargetHeading, double heading) {
+        double error = hiveTargetHeading - heading;
+        double twist = error * kpTwist;
+
+        return new double[]{twist};
     }
 
 
     public double[] holdPoseValues(double y, double x, double headingDeg) {
+        dt = pidTimer.seconds();
+        pidTimer.reset();
+        if (dt < 0.001) dt = 0.01;
 
-        double xError = this.holdX - x;
-        double yError = this.holdY - y;
+        double xError = holdX - x;
+        double yError = holdY - y;
 
         double headingErrorDeg = holdHeadingDeg - headingDeg;
         headingErrorDeg = ((headingErrorDeg + 180) % 360 + 360) % 360 - 180;
 
-        double headingErrorRad = Math.toRadians(headingErrorDeg);
-        double currentHeadingRad = Math.toRadians(headingDeg);
+// ================= DRIVE PID =================
 
-        if (this.isFirstRun) {
-            this.prevX = x;
-            this.prevY = y;
-            this.prevHeadingRad = currentHeadingRad;
-            this.isFirstRun = false;
-            return new double[]{0, 0, 0};
-        }
+        driveIntegral += xError * dt;
+        double driveDerivative = (xError - prevXError) / dt;
 
-        if (this.dt < 0.001) {
-            return new double[]{0, 0, 0};
-        }
+        double drive = kpDrive * xError + kiDrive * driveIntegral + kdDrive * driveDerivative;
 
-        double xVelocity = (x - this.prevX) / this.dt;
-        double yVelocity = (y - this.prevY) / this.dt;
+// ================= STRAFE PID =================
 
-        double deltaHeading = currentHeadingRad - this.prevHeadingRad;
-        double headingVelocity = Math.atan2(
-                Math.sin(deltaHeading), Math.cos(deltaHeading)) / this.dt;
+        strafeIntegral += yError * dt;
+        double strafeDerivative = (yError - prevYError) / dt;
 
-        this.prevX = x;
-        this.prevY = y;
-        this.prevHeadingRad = currentHeadingRad;
+        double strafe = kpStrafe * yError + kiStrafe * strafeIntegral + kdStrafe * strafeDerivative;
 
-        double drive = -(xError * 94.86832981) - (xVelocity * 17.36981056);
+// ================= TWIST PID =================
 
-        double strafe = -(yError * 100.00000000) - (yVelocity * 17.37247347);
+        twistIntegral += headingErrorDeg * dt;
+        double twistDerivative = (headingErrorDeg - prevHeadingError) / dt;
 
-        double twist = -(headingErrorRad * 180.27756377) - (headingVelocity * 31.80128451);
+        double twist =
+                kpTwist * headingErrorDeg + kiTwist * twistIntegral + kdTwist * twistDerivative;
+
+// Update previous errors
+        prevXError = xError;
+        prevYError = yError;
+        prevHeadingError = headingErrorDeg;
 
         return new double[]{strafe, twist, drive};
     }
@@ -108,18 +114,11 @@ public class DriveTrain {
     }
 
 
-    public void run(Gamepad gamepad1, double headingRad, double tx, double targetYaw, double y, double x,
+    public void run(Gamepad gamepad1, double headingRad, double tx, double targetYaw, double y, double x, boolean redTeam,
                     Telemetry telemetry) {
-        this.dt = dtTimer.seconds();
-        if (this.dt < 0.0001) this.dt = 0.01;
-        dtTimer.reset();
 
         double headingDeg = Math.toDegrees(headingRad);
-        // Toggle slow mode
-        if (gamepad1.left_stick_button && !prevLeftStickButton) {
-            slowMode = !slowMode;
-        }
-        prevLeftStickButton = gamepad1.left_stick_button;
+
 
         double drive = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
@@ -131,39 +130,43 @@ public class DriveTrain {
         if (Math.abs(twist) < 0.07) twist = 0;
 
         // Field-centric orientation geometry math
-        double robotStrafe = (strafe * Math.cos(headingRad)) - (drive * Math.sin(headingRad));
-        double robotDrive = (strafe * Math.sin(headingRad)) + (drive * Math.cos(headingRad));
+        double robotStrafe = (strafe * Math.cos(headingRad)) + (drive * Math.sin(headingRad));
+        double robotDrive = -(strafe * Math.sin(headingRad)) + (drive * Math.cos(headingRad));
 
 
-       	if(gamepad1.right_trigger_pressed && !prevRightTrigger){
-		    holdHeadingDeg = headingDeg;
-		    holdX = x;
+        if(gamepad1.touchpadWasPressed()){
+            holdHeadingDeg = headingDeg;
+            holdX = x;
             holdY = y;
-            isFirstRun = true;
             holdPose = !holdPose;
+            prevXError = 0;
+            prevYError = 0;
+            prevHeadingError = 0;
+            driveIntegral = 0;
+            strafeIntegral = 0;
+            twistIntegral = 0;
+            pidTimer.reset();
 
-           }
+        }
 
-            prevRightTrigger = gamepad1.right_trigger_pressed;
 
-            //holdPose
-            if(holdPose && !gamepad1.x) {
-                double[] holdPoseValues = holdPoseValues(y, x, headingDeg);
 
-                robotStrafe = holdPoseValues[0];
-                twist = holdPoseValues[1];
-                robotDrive = holdPoseValues[2];
+        //holdPose
+        if(holdPose && !gamepad1.x) {
+            double[] holdPoseValues = holdPoseValues(y, x, headingDeg);
 
-            }
+            robotStrafe = holdPoseValues[0];
+            twist = holdPoseValues[1];
+            robotDrive = holdPoseValues[2];
 
-            //hive lineup
-        if (gamepad1.x) {
-            double[] hiveLineUpMovement =  hiveLineUpValues(tx, targetYaw);
+        }
 
-            robotStrafe = hiveLineUpMovement[0];
-            twist = hiveLineUpMovement[1];
+        //hive lineup
+        if (gamepad1.x) {double[] hiveLineUpMovement =  hiveLineUpValues(localization.getRobotHeadingOffsetToHive(redTeam, x, y), headingDeg);
+
+            twist = hiveLineUpMovement[0];
             robotDrive = 0;
-            }
+        }
 
         // Map drive vectors to power arrays
         double[] speeds = {
@@ -172,7 +175,7 @@ public class DriveTrain {
                 (robotDrive - robotStrafe + twist), // Back Left
                 (robotDrive + robotStrafe - twist)  // Back Right
         };
-       
+
 
         // Normalize if combined motor vectors break maximum limits
         double max = Math.abs(speeds[0]);
@@ -183,14 +186,11 @@ public class DriveTrain {
             for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
         }
 
-        // Apply final speed profile multipliers
-        double speedMultiplier = slowMode ? 0.4 : 1.0;
-        frontLeft.setPower(speeds[0] * speedMultiplier);
-        frontRight.setPower(speeds[1] * speedMultiplier);
-        backLeft.setPower(speeds[2] * speedMultiplier);
-        backRight.setPower(speeds[3] * speedMultiplier);
+        frontLeft.setPower(speeds[0]);
+        frontRight.setPower(speeds[1]);
+        backLeft.setPower(speeds[2]);
+        backRight.setPower(speeds[3]);
 
-        
+
     }
 }
-

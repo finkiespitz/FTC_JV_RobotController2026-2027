@@ -26,10 +26,11 @@ import org.firstinspires.ftc.teamcode.common.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.common.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.common.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.common.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.common.tuning.Localization;
 
 @Autonomous(name = "Auto Blue1", group = "Autonomous")
 public class AutoBlue extends LinearOpMode {
-
+    private Localization Localization;
     private Follower follower;
     public Turret Turret;
     public Intake Intake;
@@ -85,7 +86,7 @@ public class AutoBlue extends LinearOpMode {
 
 
     private Command spinUpFlywheel() {return instant(() -> {
-        FlyWheel.runAuto(Limelight.getPose(redTeam));
+        FlyWheel.runAuto(1060);
     });
     }
 
@@ -103,16 +104,24 @@ public class AutoBlue extends LinearOpMode {
 
     private Command shoot4Balls() {
         return sequential(
-                instant(() -> Transfer.setPowerDirect(1)),
-                waitMs(shootTime * 4)
+                parallel(
+                        instant(() -> Transfer.setPowerDirect(1)),
+                        intakeOn()
+                ),
 
+                waitMs(shootTime * 4),
+
+                instant(() -> {
+                    Transfer.setPowerDirect(0);
+                    Intake.stop();
+                })
         );
     }
 
 
     private Command intakeOn() {
         return instant(() -> {
-            Intake.setPowerDirect(0.65);
+            Intake.setPowerDirect(1);
         });
     }
 
@@ -162,7 +171,6 @@ public class AutoBlue extends LinearOpMode {
         this.FlyWheel = new FlyWheel(hardwareMap);
         this.Turret = new Turret(hardwareMap);
         this.Intake = new Intake(hardwareMap);
-        this.FlyWheel = new FlyWheel(hardwareMap);
         //this.FlowerIntake = new FlowerIntake(hardwareMap);
         this.Transfer = new Transfer (hardwareMap);
 
@@ -181,7 +189,7 @@ public class AutoBlue extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Turret.run(follower.pose().y(), follower.pose().x(), follower.pose().heading(), redTeam, telemetry);
+        //Turret.run(Localization.getRobotHeadingOffsetToHive(redTeam, follower.pose().x(), follower.pose().y()), Math.toDegrees(follower.pose().heading()));
 
         schedule(autoRoutine());
 
